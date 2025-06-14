@@ -1,0 +1,6 @@
+# Data paths configuration
+train_data_dir: "data/train"
+train_sorted: "data/train_sorted"
+test_data_dir: "data/test"
+labels_file: "data/train_labels.csv"
+output_dir: "test"

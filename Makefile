@@ -16,3 +16,10 @@ clean:
 download-data:
 	chmod +x scripts/download_dataset.sh
 	./scripts/download_dataset.sh
+
+train:
+	uv run python3 -W ignore ./scripts/train_vit_clip.py
+
+submit:
+	chmod +x scripts/submit.sh
+	./scripts/submit.sh

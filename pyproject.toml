@@ -6,13 +6,16 @@ dynamic = ["version"]
 requires-python = ">=3.10"
 
 dependencies = [
-    "matplotlib>=3.10.3",
-    "pandas>=2.3.0",
-    "scikit-learn>=1.7.0",
-    "seaborn>=0.13.2",
-    "timm>=1.0.15",
     "torch>=2.7.1",
     "torchvision>=0.22.1",
+    "transformers>=4.52.4",
+    "openai-clip>=1.0.1",
+    "pytorch-lightning>=2.5.1.post0",
+    "pandas>=2.3.0",
+    "matplotlib>=3.10.3",
+    "scikit-learn>=1.7.0",
+    "seaborn>=0.13.2",
+
 ]
 
 [build-system]
@@ -26,40 +29,9 @@ dev = [
     "pre-commit",
     "pytest",
     "pytest-coverage",
-    "ruff",
-    "kaggle", # to download dataset from kaggle
-    "ipykernel" # to run notebooks
-]
-
-[tool.ruff]
-exclude = [".venv/"]
-line-length = 120
-target-version = "py310"
-
-[tool.ruff.lint]
-select = [
-    # Annotations: Enforce type annotations
-    "ANN",
-    # Complexity: Enforce a maximum cyclomatic complexity
-    "C90",
-    # Pydocstyle: Enforce docstrings
-    "D",
-    # Pyflakes.
-    "F",
-    # Isort: Enforce import order
-    "I",
-    # Numpy: Enforce numpy style
-    "NPY",
-    # Print: Forbid print statements
-    "T20",
-]
-ignore = [
-    # Allow self and cls to be untyped, and allow Any type
-    "ANN101", "ANN102", "ANN401",
-    # Pydocstyle ignores
-    "D100", "D101", "D104", "D203", "D212", "D401",
-    # Allow use of f-strings in logging
-    "G004"
+    "types-PyYAML",
+    "kaggle", # Kaggle API
+    "ipykernel" # Jupyter Notebooks
 ]
 
 [tool.pydoclint]

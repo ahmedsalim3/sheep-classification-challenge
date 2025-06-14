@@ -18,4 +18,4 @@ fi
 export KAGGLE_CONFIG_DIR=$(dirname "$KAGGLE_CREDS_PATH")
 uv run kaggle competitions download -c "$COMPETITION_NAME" -p .
 unzip -q sheep-classification-challenge-2025.zip && rm sheep-classification-challenge-2025.zip
-mv "Sheep Classification Images" data
+mv "Sheep Classification Images"/* data && rm -rf "Sheep Classification Images"

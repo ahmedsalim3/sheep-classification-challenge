@@ -1,0 +1,20 @@
+# ViT settings
+vit:
+  model_name: "google/vit-base-patch16-224-in21k"
+
+# CLIP settings
+clip:
+  model_name: "ViT-B/32"
+
+# Fusion settings
+fusion:
+  method: "concat"
+
+# Training settings
+batch_size: 32
+num_workers: 4
+learning_rate: 2e-5
+epochs: 10
+patience: 3
+val_split: 0.15
+seed: 42
