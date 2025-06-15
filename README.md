@@ -1,6 +1,6 @@
 # Sheep Classification Challenge
 
-A computer vision project to classify Arabian sheep breeds from images using machine learning. Built for a cultural challenge celebrating Eid al-Adha.
+A computer vision project to classify Arabian sheep breeds from images using a Vision Transformer (ViT) with K-fold cross-validation and ensemble learning.
 
 
 ## How to install
