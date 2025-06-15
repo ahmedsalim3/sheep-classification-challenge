@@ -19,9 +19,7 @@ make install
 
 ## Configuration
 
-Edit YAML files in `configs/` to configure the paths, output directories, and training parameters:
-
-- [paths.yml](./configs/config.yml) -
+Edit YAML file in [`config.yml`](./configs/config.yml) to configure the paths, output directories, and training parameters
 
 ## Dataset
 
