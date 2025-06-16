@@ -1,11 +1,11 @@
 from .classifier import ViTClassifier
-from .metrics import (
-    FocalLoss,
+from .losses import FocalLoss
+from .train_eval import train_one_epoch, evaluate
+from .training_utils import (
     compute_class_weights,
     get_optimizer_scheduler,
     EarlyStopping,
 )
-from .train import train_one_epoch, evaluate
 
 __all__ = [
     "ViTClassifier",

@@ -1,30 +1,8 @@
 import torch
-import torch.nn as nn
 import numpy as np
+from sklearn.utils.class_weight import compute_class_weight
 
 from .. import CONFIG
-
-
-class FocalLoss(nn.Module):
-    def __init__(self, alpha=None, gamma=2.0, reduction="mean"):
-        super().__init__()
-        self.alpha = alpha
-        self.gamma = gamma
-        self.reduction = reduction
-
-    def forward(self, inputs, targets):
-        ce_loss = nn.functional.cross_entropy(
-            inputs, targets, weight=self.alpha, reduction="none"
-        )
-        pt = torch.exp(-ce_loss)
-        focal_loss = (1 - pt) ** self.gamma * ce_loss
-
-        if self.reduction == "mean":
-            return focal_loss.mean()
-        elif self.reduction == "sum":
-            return focal_loss.sum()
-        else:
-            return focal_loss
 
 
 class EarlyStopping:
@@ -63,13 +41,21 @@ def get_optimizer_scheduler(model, train_loader, epochs):
     and head
     Uses AdamW optimizer, CosineAnnealingWarmRestarts scheduler
     """
+
+    head_params = []
+    backbone_params = []
+    for name, param in model.named_parameters():
+        if "classifier" in name:
+            head_params.append(param)
+        else:
+            backbone_params.append(param)
     param_groups = [
         {
-            "params": model.backbone.parameters(),
+            "params": backbone_params,
             "lr": float(CONFIG.lr) * 0.1,
         },  # Backbone with lower LR
         {
-            "params": model.classifier.parameters(),
+            "params": head_params,
             "lr": float(CONFIG.lr),
         },  # Classifier with base LR
     ]
@@ -85,13 +71,21 @@ def get_optimizer_scheduler(model, train_loader, epochs):
         T_mult=2,
         eta_min=float(CONFIG.min_lr),
     )
+    # based on the Hugging Face implementation:
+    # https://github.com/huggingface/transformers/blob/v4.23.1/src/transformers/optimization.py#L104-L135
+    # from transformers.optimization import get_cosine_schedule_with_warmup
+    # num_training_steps = epochs * len(train_loader)
+    # warmup_steps = int(0.1 * num_training_steps)  # 10% warmup
+    # scheduler = get_cosine_schedule_with_warmup(
+    #     optimizer=optimizer,
+    #     num_warmup_steps=warmup_steps,
+    #     num_training_steps=num_training_steps,
+    # )
 
     return optimizer, scheduler
 
 
 def compute_class_weights(labels, method="balanced"):
-    from sklearn.utils.class_weight import compute_class_weight
-
     classes = np.unique(labels)
 
     if method == "balanced":
