@@ -3,7 +3,7 @@ img_size: 224
 model_name: 'vit_base_patch16_224.augreg_in21k_ft_in1k'
 num_classes: 7
 batch_size: 8
-epochs: 20
+epochs: 50
 lr: 1e-4
 min_lr: 1e-6
 n_folds: 5

@@ -1,9 +1,30 @@
+import os
 from tqdm import tqdm
 
 import torch
-from sklearn.metrics import f1_score
+from torch.utils.data import DataLoader
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import f1_score, classification_report, confusion_matrix
 
-from .. import CONFIG
+from .classifier import ViTClassifier
+from .losses import FocalLoss
+from .training_utils import (
+    compute_class_weights,
+    get_optimizer_scheduler,
+    EarlyStopping,
+)
+from ..data import (
+    SheepDataset,
+    PseudoDataset,
+    get_train_transforms,
+    get_valid_transforms,
+)
+from ..utils.visualization import plot_metrics
+from .. import CONFIG, Logger
+
+logger = Logger()
 
 
 def train_one_epoch(model, loader, optimizer, criterion, scheduler, scaler, epoch):
@@ -108,3 +129,259 @@ def evaluate(model, loader, criterion=None):
             "all_labels": all_labels,
         },
     }
+
+
+def train_cross_validation(df, pseudo_train=False, results_dir=None):
+    if results_dir is None:
+        results_dir = CONFIG.results_dir
+
+    class_weights = compute_class_weights(df["label"].values, method="effective").to(
+        CONFIG.device
+    )
+    logger.info(f"Class weights: {class_weights}")
+
+    criterion = FocalLoss(alpha=class_weights, gamma=2.0)
+    skf = StratifiedKFold(
+        n_splits=CONFIG.n_folds, shuffle=True, random_state=CONFIG.seed
+    )
+
+    fold_scores = []
+    for fold, (train_idx, val_idx) in enumerate(skf.split(df, df.label)):
+        logger.info(f"\n{'-' * 60} Fold {fold+1} {'-' * 60}")
+        train_df = df.iloc[train_idx]
+        val_df = df.iloc[val_idx]
+
+        # --- Create fold-specific directories ---
+        if pseudo_train:
+            fold_results_dir = os.path.join(results_dir, f"fold_{fold+1}")
+            model_name = f"pseudo_fold_{fold+1}.pth"
+        else:
+            fold_results_dir = os.path.join(results_dir, f"fold_{fold+1}")
+            model_name = f"cv_fold_{fold+1}.pth"
+        os.makedirs(fold_results_dir, exist_ok=True)
+        # ----------------------------------------
+
+        # Print fold class distribution
+        logger.info(
+            f"Train distribution: {train_df['label'].value_counts().sort_index().tolist()}, Length: {len(train_df)}"
+        )
+        logger.info(
+            f"Val distribution: {val_df['label'].value_counts().sort_index().tolist()}, Length: {len(val_df)}"
+        )
+        if pseudo_train:
+            train_ds = PseudoDataset(
+                train_df, CONFIG.train_dir, CONFIG.test_dir, get_train_transforms()
+            )
+            val_ds = PseudoDataset(
+                val_df, CONFIG.train_dir, CONFIG.test_dir, get_valid_transforms()
+            )
+        else:
+            train_ds = SheepDataset(train_df, CONFIG.train_dir, get_train_transforms())
+            val_ds = SheepDataset(val_df, CONFIG.train_dir, get_valid_transforms())
+
+        train_loader = DataLoader(
+            train_ds,
+            batch_size=CONFIG.batch_size,
+            shuffle=True,
+            num_workers=4,
+            pin_memory=True,
+            drop_last=True,
+        )
+        val_loader = DataLoader(
+            val_ds,
+            batch_size=CONFIG.batch_size,
+            shuffle=False,
+            num_workers=4,
+            pin_memory=True,
+        )
+
+        model = ViTClassifier(CONFIG.model_name, CONFIG.num_classes).to(CONFIG.device)
+        optimizer, scheduler = get_optimizer_scheduler(
+            model, train_loader, CONFIG.epochs
+        )
+        scaler = torch.amp.GradScaler(device=CONFIG.device)
+        early_stopping = EarlyStopping(patience=CONFIG.patience)
+
+        # Initialize history tracking for this fold
+        history = {
+            "train_loss": [],
+            "train_acc": [],
+            "val_loss": [],
+            "val_acc": [],
+            "val_f1_macro": [],
+            "val_f1_weighted": [],
+        }
+
+        best_f1 = 0
+        class_report, cm = "", ""
+
+        for epoch in range(CONFIG.epochs):
+            train_loss, train_acc = train_one_epoch(
+                model, train_loader, optimizer, criterion, scheduler, scaler, epoch
+            )
+
+            eval_results = evaluate(model, val_loader, criterion)
+
+            val_f1_macro = eval_results["metrics"]["f1_macro"]
+            val_f1_weighted = eval_results["metrics"]["f1_weighted"]
+            val_acc = eval_results["metrics"]["accuracy"]
+            val_loss = eval_results["metrics"]["avg_loss"]
+            all_labels = eval_results["predictions"]["all_labels"]
+            all_preds = eval_results["predictions"]["all_preds"]
+
+            # Store metrics in history
+            history["train_loss"].append(train_loss)
+            history["train_acc"].append(train_acc)
+            history["val_loss"].append(val_loss)
+            history["val_acc"].append(val_acc)
+            history["val_f1_macro"].append(val_f1_macro)
+            history["val_f1_weighted"].append(val_f1_weighted)
+
+            logger.info(
+                f"Fold {fold+1} | Epoch {epoch+1} | Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.4f} | "
+                f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f} | "
+                f"Val F1 Macro: {val_f1_macro:.4f} | Val F1 Weighted: {val_f1_weighted:.4f}"
+            )
+
+            if val_f1_macro > best_f1:
+                best_f1 = val_f1_macro
+                torch.save(
+                    model.state_dict(),
+                    os.path.join(CONFIG.models_dir, model_name),
+                )
+                # Generate and store the classification report only when a new best model is found
+                class_report = classification_report(all_labels, all_preds, digits=4)
+                logger.info(
+                    f"New best F1-macro for Fold {fold+1} at epoch {epoch+1}. Model saved."
+                    f" Current Best F1-macro: {best_f1:.4f}"
+                )
+                # Generate confusion matrix
+                cm = confusion_matrix(all_labels, all_preds)
+                cm = str(cm)  # Convert numpy array to string for saving
+
+            if early_stopping(val_f1_macro, model):
+                logger.info(f"Early stopping at epoch {epoch+1}")
+                break
+
+        # --- Save best classification report for this fold ---
+        if class_report:
+            report_path = os.path.join(fold_results_dir, f"fold_{fold+1}_report.txt")
+            with open(report_path, "w") as f:
+                f.write(class_report)
+            print("\n------------ Classification Report ------------")
+            print(class_report)
+
+        # --- Save best confusion matrix for this fold ---
+        if cm:
+            cm_path = os.path.join(
+                fold_results_dir, f"fold_{fold+1}_confusion_matrix.txt"
+            )
+            with open(cm_path, "w") as f:
+                f.write(cm)
+            print("\n------------ Confusion Matrix ------------")
+            print(cm)
+
+        # --- Plot metrics ---
+        plot_metrics(
+            history, os.path.join(fold_results_dir, f"fold_{fold+1}_metrics.png")
+        )
+
+        # --- Save history ---
+        pd.DataFrame(history).to_csv(
+            os.path.join(fold_results_dir, f"history_fold_{fold+1}.csv"), index=False
+        )
+
+        fold_scores.append(best_f1)
+        logger.info(f"\nFold {fold+1} best F1: {best_f1:.4f}")
+
+    logger.info("\nCross-validation results:")
+    logger.info(f"Mean F1: {np.mean(fold_scores):.4f} ± {np.std(fold_scores):.4f}")
+    logger.info(f"Individual fold scores: {fold_scores}")
+
+    if pseudo_train:
+        fold_score_path = os.path.join(CONFIG.models_dir, "pseudo_fold_scores.npy")
+    else:
+        fold_score_path = os.path.join(CONFIG.models_dir, "cv_fold_scores.npy")
+    np.save(fold_score_path, np.array(fold_scores))
+
+    return fold_scores
+
+
+def predict_cross_validation(model_paths):
+    df = pd.read_csv(CONFIG.train_csv)
+    label2idx = {label: i for i, label in enumerate(sorted(df["label"].unique()))}
+    idx2label = {v: k for k, v in label2idx.items()}
+
+    test_files = sorted(
+        [f for f in os.listdir(CONFIG.test_dir) if f.lower().endswith(".jpg")]
+    )
+    test_ds = SheepDataset(
+        image_dir=CONFIG.test_dir, transform=get_valid_transforms(), is_test=True
+    )
+    test_ds.img_files = test_files
+
+    test_loader = DataLoader(
+        test_ds,
+        batch_size=CONFIG.batch_size,
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True,
+    )
+
+    all_preds = []
+    all_confidences = []
+    all_filenames = []
+
+    models = []
+    for model_file in model_paths:
+        model_path = os.path.join(CONFIG.models_dir, model_file)
+        model = ViTClassifier(CONFIG.model_name, CONFIG.num_classes).to(CONFIG.device)
+        state_dict = torch.load(
+            model_path, map_location=CONFIG.device, weights_only=True
+        )
+        model.load_state_dict(state_dict)
+        model.eval()
+        models.append(model)
+
+    # Predict in batches
+    for images, filenames in tqdm(test_loader, desc="Predicting"):
+        images = images.to(CONFIG.device)
+        batch_logits = []
+
+        with torch.no_grad():
+            for model in models:
+                with torch.amp.autocast(device_type=CONFIG.device):
+                    outputs = model(images)
+                    probs = torch.softmax(outputs, dim=1)
+                    batch_logits.append(probs.cpu().numpy())
+
+        avg_probs = np.mean(batch_logits, axis=0)
+
+        preds = np.argmax(avg_probs, axis=1)
+        confidences = np.max(avg_probs, axis=1)
+
+        all_preds.extend(preds)
+        all_confidences.extend(confidences)
+        all_filenames.extend(filenames)
+
+    all_labels = [idx2label[pred] for pred in all_preds]
+
+    df1 = pd.DataFrame({"filename": all_filenames, "label": all_labels})
+    df2 = pd.DataFrame(
+        {"filename": all_filenames, "label": all_labels, "confidence": all_confidences}
+    )
+
+    os.makedirs(CONFIG.results_dir, exist_ok=True)
+    out1 = os.path.join(CONFIG.results_dir, "submission.csv")
+    df1.to_csv(out1, index=False)
+
+    out2 = os.path.join(CONFIG.results_dir, "submission_with_confidence.csv")
+    df2.to_csv(out2, index=False)
+
+    # Print some statistics
+    logger.info(f"Total predictions: {len(all_preds)}")
+    logger.info(f"Average confidence: {np.mean(all_confidences):.4f}")
+    logger.info(f"Min confidence: {np.min(all_confidences):.4f}")
+    logger.info(f"Max confidence: {np.max(all_confidences):.4f}")
+
+    return df1, df2

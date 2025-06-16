@@ -1,0 +1,40 @@
+import torch
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+
+from src import CONFIG
+
+
+def generate_pseudo_labels(models, test_loader, threshold=0.9):
+    assert len(models) > 0, "No models provided"
+    assert len(test_loader) > 0, "No test loader provided"
+
+    pseudo_data = []
+    for images, filenames in tqdm(test_loader, desc="Generating pseudo labels"):
+        images = images.to(CONFIG.device)
+        batch_logits = []
+
+        with torch.no_grad():
+            for model in models:
+                with torch.amp.autocast(device_type=CONFIG.device):
+                    outputs = model(images)
+                    probs = torch.softmax(outputs, dim=1)
+                    batch_logits.append(probs.cpu().numpy())
+
+        avg_probs = np.mean(batch_logits, axis=0)
+        preds = np.argmax(avg_probs, axis=1)
+        confidences = np.max(avg_probs, axis=1)
+
+        for fname, pred, conf in zip(filenames, preds, confidences):
+            if conf >= threshold:
+                pseudo_data.append(
+                    {"filename": fname, "label": pred, "confidence": conf}
+                )
+
+    pseudo_df = pd.DataFrame(pseudo_data)
+    pseudo_df["source"] = (
+        "pseudo"  # adding this column to know the source of the pseudo labels
+    )
+
+    return pseudo_df

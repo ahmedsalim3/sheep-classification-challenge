@@ -122,6 +122,6 @@ def plot_metrics(history, save_path):
         dpi=300,
         bbox_inches="tight",
     )
-    plt.show()
+    # plt.show()
 
     return fig

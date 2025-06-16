@@ -3,6 +3,28 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
+import numpy as np
+import random
+
+from .logger import Logger
+
+logger = Logger()
+
+
+class SeedManager:
+    def __init__(self, seed: int):
+        self.seed = seed
+
+    def seed_everything(self):
+        random.seed(self.seed)
+        np.random.seed(self.seed)
+        torch.manual_seed(self.seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(self.seed)
+
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        logger.info(f"Seeds set to: {self.seed}")
 
 
 class ConfigManager:
