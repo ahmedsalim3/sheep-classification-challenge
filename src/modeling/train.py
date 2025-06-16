@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
 import torch
-from sklearn.metrics import f1_score, classification_report
+from sklearn.metrics import f1_score
 
 from .. import CONFIG
 
@@ -43,16 +43,15 @@ def train_one_epoch(model, loader, optimizer, criterion, scheduler, scaler, epoc
             {"loss": f"{loss.item():.4f}", "acc": f"{100.*correct/total:.2f}%"}
         )
 
-    return total_loss / len(loader), 100.0 * correct / total
+    return total_loss / len(loader), correct / total
 
 
-def evaluate(model, loader, criterion=None, class_report=False):
+def evaluate(model, loader, criterion=None):
     model.eval()
     all_preds, all_labels = [], []
     total_loss = 0
     correct = 0
     total = 0
-    report_txt = ""
 
     with torch.no_grad():
         for images, labels in tqdm(loader, desc="Validating"):
@@ -79,9 +78,15 @@ def evaluate(model, loader, criterion=None, class_report=False):
     accuracy = correct / total if total > 0 else 0
     avg_loss = total_loss / len(loader) if criterion is not None else 0
 
-    if class_report:
-        print("\n--- Classification Report ---")
-        report_txt = classification_report(all_labels, all_preds, digits=4)
-        print(classification_report(all_labels, all_preds, digits=4))
-
-    return f1_macro, f1_weighted, accuracy, avg_loss, report_txt
+    return {
+        "metrics": {
+            "f1_macro": f1_macro,
+            "f1_weighted": f1_weighted,
+            "accuracy": accuracy,
+            "avg_loss": avg_loss,
+        },
+        "predictions": {
+            "all_preds": all_preds,
+            "all_labels": all_labels,
+        },
+    }

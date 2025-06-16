@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import classification_report, confusion_matrix
 
 from src.data import SheepDataset, get_train_transforms, get_valid_transforms
 from src.modeling import (
@@ -45,9 +46,14 @@ def main():
 
     fold_scores = []
     for fold, (train_idx, val_idx) in enumerate(skf.split(df, df.label)):
-        logger.info(f"\n----------------------- Fold {fold+1} -----------------------")
+        logger.info(f"\n{'-' * 60} Fold {fold+1} {'-' * 60}")
         train_df = df.iloc[train_idx]
         val_df = df.iloc[val_idx]
+
+        # --- Create fold-specific directories ---
+        fold_results_dir = os.path.join(CONFIG.results_dir, f"fold_{fold+1}")
+        os.makedirs(fold_results_dir, exist_ok=True)
+        # ----------------------------------------
 
         # Print fold class distribution
         logger.info(
@@ -85,6 +91,8 @@ def main():
 
         # Initialize history tracking for this fold
         history = {
+            "train_loss": [],
+            "train_acc": [],
             "val_loss": [],
             "val_acc": [],
             "val_f1_macro": [],
@@ -92,26 +100,32 @@ def main():
         }
 
         best_f1 = 0
+        class_report, cm = "", ""
 
         for epoch in range(CONFIG.epochs):
             train_loss, train_acc = train_one_epoch(
                 model, train_loader, optimizer, criterion, scheduler, scaler, epoch
             )
 
-            # Save class report only at the last epoch or every 5th
-            save_report = epoch == CONFIG.epochs - 1
-            val_f1_macro, val_f1_weighted, val_acc, val_loss, report_txt = evaluate(
-                model, val_loader, criterion, class_report=save_report
-            )
+            eval_results = evaluate(model, val_loader, criterion)
+
+            val_f1_macro = eval_results["metrics"]["f1_macro"]
+            val_f1_weighted = eval_results["metrics"]["f1_weighted"]
+            val_acc = eval_results["metrics"]["accuracy"]
+            val_loss = eval_results["metrics"]["avg_loss"]
+            all_labels = eval_results["predictions"]["all_labels"]
+            all_preds = eval_results["predictions"]["all_preds"]
 
             # Store metrics in history
+            history["train_loss"].append(train_loss)
+            history["train_acc"].append(train_acc)
             history["val_loss"].append(val_loss)
             history["val_acc"].append(val_acc)
             history["val_f1_macro"].append(val_f1_macro)
             history["val_f1_weighted"].append(val_f1_weighted)
 
             logger.info(
-                f"Fold {fold+1} | Epoch {epoch} | Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}% | "
+                f"Fold {fold+1} | Epoch {epoch+1} | Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.4f} | "
                 f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f} | "
                 f"Val F1 Macro: {val_f1_macro:.4f} | Val F1 Weighted: {val_f1_weighted:.4f}"
             )
@@ -122,24 +136,44 @@ def main():
                     model.state_dict(),
                     os.path.join(CONFIG.models_dir, f"best_model_fold{fold}.pth"),
                 )
-                # Save best classification report
-                if report_txt:
-                    report_path = os.path.join(
-                        CONFIG.results_dir, f"fold_{fold}_report.txt"
-                    )
-                    with open(report_path, "w") as f:
-                        f.write(report_txt)
+                # Generate and store the classification report only when a new best model is found
+                class_report = classification_report(all_labels, all_preds, digits=4)
+                logger.info(
+                    f"New best F1-macro for Fold {fold+1} at epoch {epoch+1}. Model saved."
+                )
+                # Generate confusion matrix
+                cm = confusion_matrix(all_labels, all_preds)
+                cm = str(cm)  # Convert numpy array to string for saving
 
-            # Early stopping
             if early_stopping(val_f1_macro, model):
-                logger.info(f"Early stopping at epoch {epoch}")
+                logger.info(f"Early stopping at epoch {epoch+1}")
                 break
 
-        # Plot metrics for this fold
-        plot_metrics(history, f"folde_{fold}_metrics")
+        # --- Save best classification report for this fold ---
+        if class_report:
+            report_path = os.path.join(fold_results_dir, f"fold_{fold+1}_report.txt")
+            with open(report_path, "w") as f:
+                f.write(class_report)
+            print("\n------------ Classification Report ------------")
+            print(class_report)
+
+        # --- Save best confusion matrix for this fold ---
+        if cm:
+            cm_path = os.path.join(
+                fold_results_dir, f"fold_{fold+1}_confusion_matrix.txt"
+            )
+            with open(cm_path, "w") as f:
+                f.write(cm)
+            print("\n------------ Confusion Matrix ------------")
+            print(cm)
+
+        # --- Plot metrics ---
+        plot_metrics(
+            history, os.path.join(fold_results_dir, f"fold_{fold+1}_metrics.png")
+        )
 
         fold_scores.append(best_f1)
-        logger.info(f"Fold {fold} best F1: {best_f1:.4f}")
+        logger.info(f"Fold {fold+1} best F1: {best_f1:.4f}")
 
     logger.info("\nCross-validation results:")
     logger.info(f"Mean F1: {np.mean(fold_scores):.4f} ± {np.std(fold_scores):.4f}")

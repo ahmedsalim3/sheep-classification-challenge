@@ -1,4 +1,3 @@
-import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -7,9 +6,9 @@ from .. import ConfigManager
 CONFIG = ConfigManager()
 
 
-def plot_metrics(history, save_name):
+def plot_metrics(history, save_path):
     sns.set_style("darkgrid")
-    colors = {"val": "#084d02"}
+    colors = {"train": "#124467", "val": "#084d02"}
 
     # Make all metrics same length (minimum length across)
     min_len = min(len(v) for v in history.values())
@@ -19,8 +18,17 @@ def plot_metrics(history, save_name):
 
     fig, axes = plt.subplots(1, 4, figsize=(24, 5))  # 1 row, 4 columns
 
-    # Validation Loss
+    # Loss Plot
     ax = axes[0]
+    ax.plot(
+        epochs,
+        history["train_loss"],
+        marker="o",
+        markersize=6,
+        linewidth=2,
+        color=colors["train"],
+        label="Train Loss",
+    )
     ax.plot(
         epochs,
         history["val_loss"],
@@ -28,9 +36,9 @@ def plot_metrics(history, save_name):
         markersize=6,
         linewidth=2,
         color=colors["val"],
-        label="Validation",
+        label="Val Loss",
     )
-    ax.set_title("Validation Loss", fontsize=14, fontweight="bold")
+    ax.set_title("Train and Val Loss", fontsize=14, fontweight="bold")
     ax.set_xlabel("Epoch", fontsize=12)
     ax.set_ylabel("Loss", fontsize=12)
     ax.spines["top"].set_visible(False)
@@ -38,8 +46,17 @@ def plot_metrics(history, save_name):
     ax.legend(loc="upper right", frameon=True, fontsize=11)
     ax.grid(True, linestyle="--", alpha=0.6)
 
-    # Validation Acc
+    # Acc Plot
     ax = axes[1]
+    ax.plot(
+        epochs,
+        history["train_acc"],
+        marker="o",
+        markersize=6,
+        linewidth=2,
+        color=colors["train"],
+        label="Train Acc",
+    )
     ax.plot(
         epochs,
         history["val_acc"],
@@ -47,9 +64,9 @@ def plot_metrics(history, save_name):
         markersize=6,
         linewidth=2,
         color=colors["val"],
-        label="Validation",
+        label="Val Acc",
     )
-    ax.set_title("Validation Accuracy", fontsize=14, fontweight="bold")
+    ax.set_title("Train and Val Acc", fontsize=14, fontweight="bold")
     ax.set_xlabel("Epoch", fontsize=12)
     ax.set_ylabel("Accuracy", fontsize=12)
     ax.set_ylim(0, 1)
@@ -67,9 +84,9 @@ def plot_metrics(history, save_name):
         markersize=6,
         linewidth=2,
         color=colors["val"],
-        label="F1 Macro",
+        label="Val F1 Macro",
     )
-    ax.set_title("F1 Macro Score", fontsize=14, fontweight="bold")
+    ax.set_title("Val F1 Macro", fontsize=14, fontweight="bold")
     ax.set_xlabel("Epoch", fontsize=12)
     ax.set_ylabel("F1 Score", fontsize=12)
     ax.set_ylim(0, 1)
@@ -87,9 +104,9 @@ def plot_metrics(history, save_name):
         markersize=6,
         linewidth=2,
         color=colors["val"],
-        label="F1 Weighted",
+        label="Val F1 Weighted",
     )
-    ax.set_title("F1 Weighted Score", fontsize=14, fontweight="bold")
+    ax.set_title("Val F1 Weighted", fontsize=14, fontweight="bold")
     ax.set_xlabel("Epoch", fontsize=12)
     ax.set_ylabel("F1 Score", fontsize=12)
     ax.set_ylim(0, 1)
@@ -100,7 +117,7 @@ def plot_metrics(history, save_name):
 
     plt.tight_layout()
     plt.savefig(
-        os.path.join(CONFIG.results_dir, save_name),
+        save_path,
         format="png",
         dpi=300,
         bbox_inches="tight",
