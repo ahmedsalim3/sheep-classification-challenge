@@ -40,3 +40,38 @@ class SheepDataset(Dataset):
                 image = self.transform(image=image)["image"]
             label = row["label"]
             return image, torch.tensor(label, dtype=torch.long)
+
+
+class PseudoDataset(Dataset):
+    def __init__(self, df, train_dir, test_dir, transform=None):
+        self.df = df.reset_index(drop=True)
+        self.train_dir = train_dir
+        self.test_dir = test_dir
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, idx):
+        row = self.df.iloc[idx]
+        filename = row["filename"]
+        label = row["label"]
+        source = row.get("source", "train")
+        confidence = row.get(
+            "confidence", 1.0
+        )  # default to 1.0 for clean training data
+
+        img_dir = self.test_dir if source == "pseudo" else self.train_dir
+        img_path = os.path.join(img_dir, filename)
+
+        image = Image.open(img_path).convert("RGB")
+        image = np.array(image)
+
+        if self.transform:
+            image = self.transform(image=image)["image"]
+
+        return (
+            image,
+            torch.tensor(label, dtype=torch.long),
+            torch.tensor(confidence, dtype=torch.float),
+        )
