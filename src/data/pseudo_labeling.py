@@ -38,3 +38,10 @@ def generate_pseudo_labels(models, test_loader, threshold=0.9):
     )
 
     return pseudo_df
+
+
+def load_pseudo_labels(pseudo_df):
+    # create a map filename -> (label, confidence)
+    label_map = dict(zip(pseudo_df["filename"], pseudo_df["label"]))
+    conf_map = dict(zip(pseudo_df["filename"], pseudo_df["confidence"]))
+    return label_map, conf_map

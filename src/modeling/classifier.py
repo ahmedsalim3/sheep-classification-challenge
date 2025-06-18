@@ -1,5 +1,6 @@
 import torch.nn as nn
 import timm
+import torch
 
 
 class ViTClassifier(nn.Module):
@@ -10,19 +11,11 @@ class ViTClassifier(nn.Module):
         self.backbone.reset_classifier(0)  # Remove default classifier head
 
         self.classifier = nn.Sequential(
-            nn.Linear(in_features, 1024),
-            nn.BatchNorm1d(1024),
-            nn.GELU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(1024, 512),
+            nn.Linear(in_features, 512),
             nn.BatchNorm1d(512),
             nn.GELU(),
-            nn.Dropout(dropout_rate * 0.7),
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
-            nn.GELU(),
-            nn.Dropout(dropout_rate * 0.5),
-            nn.Linear(256, num_classes),
+            nn.Dropout(dropout_rate),
+            nn.Linear(512, num_classes),
         )
 
         self._init_weights()
@@ -37,3 +30,11 @@ class ViTClassifier(nn.Module):
     def forward(self, x):
         features = self.backbone(x)
         return self.classifier(features)
+
+    def get_features(self, x):
+        with torch.no_grad():
+            feats = self.backbone.forward_features(x)
+            feats = self.backbone.forward_head(
+                feats, pre_logits=True
+            )  # get final embedding
+            return feats
