@@ -3,15 +3,21 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
-from src import CONFIG
+from src.utils.config import ConfigManager
+from src.utils.logger import Logger
+
+CONFIG = ConfigManager()
+logger = Logger()
 
 
-def generate_pseudo_labels(models, test_loader, threshold=0.9):
+def generate_pseudo_labels(models, test_loader, threshold):
     assert len(models) > 0, "No models provided"
     assert len(test_loader) > 0, "No test loader provided"
 
     pseudo_data = []
-    for images, filenames in tqdm(test_loader, desc="Generating pseudo labels"):
+    for images, filenames in tqdm(
+        test_loader, desc=f"Generating pseudo labels ≥ {threshold:.2f} confidence"
+    ):
         images = images.to(CONFIG.device)
         batch_logits = []
 
@@ -36,7 +42,12 @@ def generate_pseudo_labels(models, test_loader, threshold=0.9):
     pseudo_df["source"] = (
         "pseudo"  # adding this column to know the source of the pseudo labels
     )
-
+    logger.info(
+        f"Generated {len(pseudo_df)} pseudo-labels out of {len(test_loader.dataset)} test images"
+    )
+    logger.info(
+        f"Excluded {len(test_loader.dataset) - len(pseudo_df)} low-confidence predictions"
+    )
     return pseudo_df
 
 

@@ -13,3 +13,7 @@ train_dir: 'data/train'
 test_dir: 'data/test'
 models_dir: 'models'
 results_dir: 'results'
+processed_data_dir: 'data/processed'
+pseudo_train: true
+pseudo_threshold: 0.96
+cluster_train: true

@@ -15,12 +15,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-from ..data import SheepDataset, get_valid_transforms, load_pseudo_labels
-from .feature_extraction import extract_features
-from .helpers import load_models
+from src.data.dataset import SheepDataset
+from src.data.transforms import get_valid_transforms
+from src.data.pseudo_labeling import load_pseudo_labels
+from src.modeling.feature_extraction import extract_features
+from src.modeling.helpers import load_models
+from src.utils.config import ConfigManager
+from src.utils.logger import Logger
 
-from src import CONFIG, Logger
-
+CONFIG = ConfigManager()
 logger = Logger()
 
 
@@ -31,7 +34,6 @@ class KMeansClustering:
         self.output_dir = output_dir
         self.pseudo_df = pseudo_df
         self.purity_threshold = purity_threshold
-
         self.models = self._load_models()
         self.test_loader = self._load_test_loader()
         self.filenames = self.test_loader.dataset.img_files
@@ -110,9 +112,6 @@ class KMeansClustering:
             purity_threshold=self.purity_threshold,
             return_df=True,
         )
-        logger.info(
-            f"Merged CSV saved to {os.path.join(self.output_dir, 'pseudo_clustered_merged.csv')}"
-        )
 
         return df_clusters, merged_df
 
@@ -124,7 +123,7 @@ def run_clustering(features, k=7):
         n_components=2, random_state=CONFIG.seed, n_neighbors=15, min_dist=0.1
     )
     embedding = reducer.fit_transform(scaled)
-    clusterer = KMeans(n_clusters=k, random_state=CONFIG.seed)
+    clusterer = KMeans(k, random_state=CONFIG.seed)
     cluster_labels = clusterer.fit_predict(scaled)
     return embedding, cluster_labels
 
@@ -174,7 +173,7 @@ def show_clusters(df_clusters, output_dir=None):
     plt.tight_layout()
     if output_dir:
         plt.savefig(os.path.join(output_dir, "cluster_umap.png"))
-    plt.show()
+    # plt.show()
 
 
 def calc_cluster_purity(df):
@@ -243,6 +242,7 @@ def build_csv(
 
     # Merge all
     merged_df = pd.concat([train, pseudo, cluster], ignore_index=True)
+    merged_df.rename(columns={"conf": "confidence", "src": "source"}, inplace=True)
     merged_df.to_csv(
         os.path.join(output_dir, "pseudo_clustered_merged.csv"), index=False
     )

@@ -6,7 +6,7 @@ import yaml
 import numpy as np
 import random
 
-from .logger import Logger
+from src.utils.logger import Logger
 
 logger = Logger()
 
@@ -47,6 +47,7 @@ class ConfigManager:
 
         Path(self.config["models_dir"]).mkdir(parents=True, exist_ok=True)
         Path(self.config["results_dir"]).mkdir(parents=True, exist_ok=True)
+        Path(self.config["processed_data_dir"]).mkdir(parents=True, exist_ok=True)
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 

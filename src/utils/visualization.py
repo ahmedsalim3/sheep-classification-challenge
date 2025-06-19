@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from .. import ConfigManager
-
-CONFIG = ConfigManager()
-
 
 def plot_metrics(history, save_path):
     sns.set_style("darkgrid")

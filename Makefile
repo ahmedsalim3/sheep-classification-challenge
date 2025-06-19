@@ -18,10 +18,7 @@ download-data:
 	./scripts/download_dataset.sh
 
 train:
-	uv run python3 -W ignore ./scripts/train.py
-
-predict:
-	uv run python3 -W ignore ./scripts/predict.py
+	uv run python3 -W ignore ./scripts/full_cv.py
 
 submit:
 	chmod +x scripts/submit.sh

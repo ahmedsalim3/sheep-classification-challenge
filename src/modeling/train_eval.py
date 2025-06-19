@@ -7,23 +7,19 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
 
-from .classifier import ViTClassifier
-from .losses import FocalLoss
-from .training_utils import (
-    compute_class_weights,
-    get_optimizer_scheduler,
-    EarlyStopping,
-)
-from ..data import (
-    SheepDataset,
-    PseudoDataset,
-    get_train_transforms,
-    get_valid_transforms,
-)
-from ..utils.visualization import plot_metrics
-from .. import CONFIG, Logger
+from src.modeling.classifier import ViTClassifier
+from src.modeling.losses import FocalLoss
+from src.modeling.optimizers import get_optimizer_scheduler
+from src.modeling.training_utils import compute_class_weights, EarlyStopping
+from src.data.dataset import SheepDataset, PseudoDataset
+from src.data.transforms import get_train_transforms, get_valid_transforms
+from src.utils.visualization import plot_metrics
+from src.utils.config import ConfigManager
+from src.utils.logger import Logger
 
+CONFIG = ConfigManager()
 logger = Logger()
 
 
@@ -138,7 +134,7 @@ def train_cross_validation(df, pseudo_train=False, results_dir=None):
     class_weights = compute_class_weights(df["label"].values, method="effective").to(
         CONFIG.device
     )
-    logger.info(f"Class weights: {class_weights}")
+    # logger.info(f"Class weights: {class_weights}")
 
     criterion = FocalLoss(alpha=class_weights, gamma=2.0)
     skf = StratifiedKFold(
@@ -147,7 +143,7 @@ def train_cross_validation(df, pseudo_train=False, results_dir=None):
 
     fold_scores = []
     for fold, (train_idx, val_idx) in enumerate(skf.split(df, df.label)):
-        logger.info(f"\n{'-' * 60} Fold {fold+1} {'-' * 60}")
+        logger.info(f"\n{'=' * 70} FOLD {fold+1} {'=' * 70}")
         train_df = df.iloc[train_idx]
         val_df = df.iloc[val_idx]
 
@@ -268,8 +264,8 @@ def train_cross_validation(df, pseudo_train=False, results_dir=None):
             report_path = os.path.join(fold_results_dir, f"fold_{fold+1}_report.txt")
             with open(report_path, "w") as f:
                 f.write(class_report)
-            print("\n------------ Classification Report ------------")
-            print(class_report)
+            logger.info("\n----- Classification Report -----")
+            logger.info(class_report)
 
         # --- Save best confusion matrix for this fold ---
         if cm:
@@ -278,8 +274,8 @@ def train_cross_validation(df, pseudo_train=False, results_dir=None):
             )
             with open(cm_path, "w") as f:
                 f.write(cm)
-            print("\n------------ Confusion Matrix ------------")
-            print(cm)
+            logger.info("\n----- Confusion Matrix -----")
+            logger.info(cm)
 
         # --- Plot metrics ---
         plot_metrics(
@@ -385,3 +381,166 @@ def predict_cross_validation(model_paths):
     logger.info(f"Max confidence: {np.max(all_confidences):.4f}")
 
     return df1, df2
+
+
+def train_normal(
+    train_df, val_df, pseudo_train=False, results_dir=None, model_name="best_model.pth"
+):
+    """Train model normally with train/validation split (no cross-validation)."""
+    if results_dir is None:
+        results_dir = CONFIG.results_dir
+
+    class_weights = compute_class_weights(
+        train_df["label"].values, method="effective"
+    ).to(CONFIG.device)
+    logger.info(f"Class weights: {class_weights}")
+
+    criterion = FocalLoss(alpha=class_weights, gamma=2.0)
+
+    logger.info(
+        f"Train distribution: {train_df['label'].value_counts().sort_index().tolist()}, Length: {len(train_df)}"
+    )
+    logger.info(
+        f"Val distribution: {val_df['label'].value_counts().sort_index().tolist()}, Length: {len(val_df)}"
+    )
+
+    if pseudo_train:
+        train_ds = PseudoDataset(
+            train_df, CONFIG.train_dir, CONFIG.test_dir, get_train_transforms()
+        )
+        val_ds = PseudoDataset(
+            val_df, CONFIG.train_dir, CONFIG.test_dir, get_valid_transforms()
+        )
+    else:
+        train_ds = SheepDataset(train_df, CONFIG.train_dir, get_train_transforms())
+        val_ds = SheepDataset(val_df, CONFIG.train_dir, get_valid_transforms())
+
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=CONFIG.batch_size,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True,
+        drop_last=True,
+    )
+    val_loader = DataLoader(
+        val_ds,
+        batch_size=CONFIG.batch_size,
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True,
+    )
+
+    model = ViTClassifier(CONFIG.model_name, CONFIG.num_classes).to(CONFIG.device)
+    optimizer, scheduler = get_optimizer_scheduler(model, train_loader, CONFIG.epochs)
+    scaler = torch.amp.GradScaler(device=CONFIG.device)
+    early_stopping = EarlyStopping(patience=CONFIG.patience)
+
+    history = {
+        "train_loss": [],
+        "train_acc": [],
+        "val_loss": [],
+        "val_acc": [],
+        "val_f1_macro": [],
+        "val_f1_weighted": [],
+    }
+
+    best_f1 = 0
+    best_epoch = 0
+    class_report, cm = "", ""
+
+    logger.info(f"\n{'=' * 70} TRAINING START {'=' * 70}")
+
+    for epoch in range(CONFIG.epochs):
+        train_loss, train_acc = train_one_epoch(
+            model, train_loader, optimizer, criterion, scheduler, scaler, epoch
+        )
+
+        eval_results = evaluate(model, val_loader, criterion)
+
+        val_f1_macro = eval_results["metrics"]["f1_macro"]
+        val_f1_weighted = eval_results["metrics"]["f1_weighted"]
+        val_acc = eval_results["metrics"]["accuracy"]
+        val_loss = eval_results["metrics"]["avg_loss"]
+        all_labels = eval_results["predictions"]["all_labels"]
+        all_preds = eval_results["predictions"]["all_preds"]
+
+        history["train_loss"].append(train_loss)
+        history["train_acc"].append(train_acc)
+        history["val_loss"].append(val_loss)
+        history["val_acc"].append(val_acc)
+        history["val_f1_macro"].append(val_f1_macro)
+        history["val_f1_weighted"].append(val_f1_weighted)
+
+        logger.info(
+            f"Epoch {epoch+1}/{CONFIG.epochs} | "
+            f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.4f} | "
+            f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f} | "
+            f"Val F1 Macro: {val_f1_macro:.4f} | Val F1 Weighted: {val_f1_weighted:.4f}"
+        )
+
+        if val_f1_macro > best_f1:
+            best_f1 = val_f1_macro
+            best_epoch = epoch + 1
+
+            best_f1 = val_f1_macro
+            torch.save(
+                model.state_dict(),
+                os.path.join(CONFIG.models_dir, model_name),
+            )
+
+            class_report = classification_report(all_labels, all_preds, digits=4)
+            cm = confusion_matrix(all_labels, all_preds)
+            cm_str = str(cm)
+
+            logger.info(
+                f"New best F1-macro at epoch {epoch+1}: {best_f1:.4f} - Model saved!"
+            )
+
+        if early_stopping(val_f1_macro, model):
+            logger.info(f"Early stopping at epoch {epoch+1}")
+            break
+
+    logger.info(f"\n{'=' * 70} TRAINING COMPLETE {'=' * 70}")
+    logger.info(f"Best F1-macro: {best_f1:.4f} achieved at epoch {best_epoch}")
+
+    if class_report:
+        report_path = os.path.join(results_dir, "classification_report.txt")
+        with open(report_path, "w") as f:
+            f.write(class_report)
+        logger.info("\n----- Final Classification Report -----")
+        logger.info(class_report)
+
+    if cm_str:
+        cm_path = os.path.join(results_dir, "confusion_matrix.txt")
+        with open(cm_path, "w") as f:
+            f.write(cm_str)
+        logger.info("\n----- Final Confusion Matrix -----")
+        logger.info(cm_str)
+
+    plot_metrics(history, os.path.join(results_dir, "training_metrics.png"))
+
+    pd.DataFrame(history).to_csv(
+        os.path.join(results_dir, "training_history.csv"), index=False
+    )
+
+    return {
+        "best_f1": best_f1,
+        "best_epoch": best_epoch,
+        "history": history,
+        "final_model_path": os.path.join(CONFIG.models_dir, model_name),
+    }
+
+
+def split_train_val_and_train(df, test_size=0.2, random_state=CONFIG.seed):
+    train_df, val_df = train_test_split(
+        df, test_size=test_size, stratify=df["label"], random_state=random_state
+    )
+
+    logger.info(f"Training set size: {len(train_df)}")
+    logger.info(f"Validation set size: {len(val_df)}")
+
+    # Train the model
+    results = train_normal(train_df, val_df)
+
+    return results, train_df, val_df

@@ -1,8 +1,10 @@
 import numpy as np
 from tqdm import tqdm
 
-from .. import CONFIG, Logger
+from src.utils.config import ConfigManager
+from src.utils.logger import Logger
 
+CONFIG = ConfigManager()
 logger = Logger()
 
 

@@ -61,7 +61,11 @@ class PseudoDataset(Dataset):
             "confidence", 1.0
         )  # default to 1.0 for clean training data
 
-        img_dir = self.test_dir if source == "pseudo" else self.train_dir
+        img_dir = (
+            self.test_dir
+            if source == "pseudo" or source == "cluster"
+            else self.train_dir
+        )
         img_path = os.path.join(img_dir, filename)
 
         image = Image.open(img_path).convert("RGB")
