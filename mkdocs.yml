@@ -1,0 +1,40 @@
+site_name: Sheep Classification Challenge
+site_description: A deep learning solution for classifying sheep breeds with semi-supervised learning.
+site_author: Ahmed Hashem Tahassalim
+site_url: https://ahmedsalim3.github.io/sheep-classification-challenge/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: teal
+      accent: teal
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.tabs.link
+
+nav:
+  - Home: index.md
+  - GitHub: https://github.com/ahmedsalim3/sheep-classification-challenge
+  - Notebook: https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - footnotes
+  - def_list
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://ahmedsalim3.github.io/
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/ahmedsalim3
