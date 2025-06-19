@@ -1,6 +1,6 @@
 [project]
 name = "sheep-classification-challenge"
-description = "A computer vision project to classify Arabian sheep breeds from images using machine learning. Built for a cultural challenge celebrating Eid al-Adha"
+description = "A deep learning solution for classifying sheep breeds with semi-supervised learning"
 readme = "README.md"
 dynamic = ["version"]
 requires-python = ">=3.10"

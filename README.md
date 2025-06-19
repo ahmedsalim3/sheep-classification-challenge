@@ -1,6 +1,6 @@
 # Sheep Classification Challenge
 
-A computer vision project to classify Arabian sheep breeds from images using a Vision Transformer (ViT) with K-fold cross-validation and ensemble learning.
+A deep learning solution for classifying sheep breeds with semi-supervised learning.
 
 
 ## How to install
@@ -35,14 +35,7 @@ make train
 
 ## Results
 
-```bash
-Cross-validation results:
-Mean F1: 0.9576 ± 0.0158
-Individual fold scores: [0.9610855046521297, 0.9314436885865457, 0.9517947495203616, 0.9792646410961358, 0.9646165120085449]
-```
-
-The full results can be found [here](./results/)
-![](./results/folde_1_metrics.png)
+The complete results can be found [here](./results/)
 
 ## Team Structure and Contribution
 
@@ -51,3 +44,4 @@ The full results can be found [here](./results/)
 ## References
 
 [Eid Al-Adha 2025: Sheep Classification Challenge](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/overview)
+[Fix The Data First, Then Worry About The Model](https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model/notebook)
