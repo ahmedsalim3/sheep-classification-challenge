@@ -1,6 +1,8 @@
 # Sheep Classification Challenge
 
-A deep learning solution for classifying sheep breeds with semi-supervised learning.
+A deep learning solution for classifying sheep breeds using semi-supervised learning. The project tackles a small, imbalanced dataset with smart data mining techniques and Vision Transformers.
+
+👉 Check the [project page](https://ahmedsalim3.github.io/sheep-classification-challenge/), it walks through everything: training strategy, tricks used, and what worked (and what didn't)
 
 
 ## How to install
@@ -23,25 +25,37 @@ Edit YAML file in [`config.yml`](./configs/config.yml) to configure the paths, o
 
 ## Dataset
 
-The dataset can be found on [Kaggle](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/data).
-You can also download it by running `make download-data`. Make sure to configure your Kaggle credential paths [here](./scripts/download_dataset.sh#L11)
+The dataset is hosted on [Kaggle](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/data).
+YTo download it automatically:
+
+```sh
+`make download-data`
+```
+
+Make sure your Kaggle credentials are set correctly [here](./scripts/download_dataset.sh#L11)
 
 ## Training
 
+Run training with:
+
 ```sh
 make train
-# or python scripts/train.py
+# or just:
+python scripts/train_cv.py
 ```
+
+It supports clean training, pseudo-labeling, clustering, and full semi-supervised loops
 
 ## Results
 
-The complete results can be found [here](./results/)
+All final logs, metrics, and plots can be found inside the [here](./results/) folder
 
-## Team Structure and Contribution
+## Contributions
 
-[@ahmedsalim3](https://github.com/ahmedsalim3)
+Pull requests and suggestions are welcome. If you found this helpful or want to build on it, feel free to reach out [@ahmedsalim3](https://github.com/ahmedsalim3)
 
 ## References
 
 [Eid Al-Adha 2025: Sheep Classification Challenge](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/overview)
+
 [Fix The Data First, Then Worry About The Model](https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model/notebook)
