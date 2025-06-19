@@ -18,6 +18,7 @@ theme:
     - navigation.top
     - content.code.copy
     - content.tabs.link
+  favicon: assets/images/favicon.png
 
 nav:
   - Home: index.md
