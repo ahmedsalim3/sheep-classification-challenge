@@ -368,57 +368,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      Project Structure
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      Getting Started
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Getting Started">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Installation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      Quick Start
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#key-insights-learnings" class="md-nav__link">
     <span class="md-ellipsis">
       Key Insights &amp; Learnings
@@ -464,15 +413,6 @@
   <a href="#resources" class="md-nav__link">
     <span class="md-ellipsis">
       Resources
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
     </span>
   </a>
   
@@ -668,57 +608,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      Project Structure
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      Getting Started
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Getting Started">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Installation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      Quick Start
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#key-insights-learnings" class="md-nav__link">
     <span class="md-ellipsis">
       Key Insights &amp; Learnings
@@ -764,15 +653,6 @@
   <a href="#resources" class="md-nav__link">
     <span class="md-ellipsis">
       Resources
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
     </span>
   </a>
   
@@ -887,45 +767,6 @@
 <li><strong>Weighted ensemble</strong> balances clean vs. pseudo-labeled models</li>
 <li><strong>Effective class weighting</strong> handles severe imbalance</li>
 </ul>
-<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><code>sheep-classification-challenge/
-├── src/
-│   ├── modeling/         # Training, evaluation, clustering
-│   ├── data/             # Dataset, transforms, pseudo-labeling
-│   └── utils/            # Helpers and utilities
-├── scripts/
-│   ├── train_cv.py       # Main training script
-│   ├── workflow.py       # Complete pipeline orchestration
-│   └── submit.sh         # Submission automation
-├── configs/              # Configuration files
-├── notebooks/            # Jupyter notebooks
-└── results/              # Training outputs and metrics
-</code></pre></div>
-
-<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
-<h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ahmedsalim3/sheep-classification-challenge.git
-<span class="nb">cd</span><span class="w"> </span>sheep-classification-challenge
-make<span class="w"> </span>install
-</code></pre></div>
-
-<h3 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Download dataset</span>
-make<span class="w"> </span>download-data
-
-<span class="c1"># Run complete pipeline</span>
-python<span class="w"> </span>scripts/train_cv.py
-
-<span class="c1"># Or use the workflow script</span>
-python<span class="w"> </span>scripts/workflow.py<span class="w"> </span>--mode<span class="w"> </span>full<span class="w"> </span>--use_clustering
-</code></pre></div>
-
-<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
-<p>Edit <code>configs/config.yml</code> to customize:
-- Data paths and directories
-- Training parameters
-- Pseudo-labeling thresholds
-- Clustering settings</p>
 <h2 id="key-insights-learnings">Key Insights &amp; Learnings<a class="headerlink" href="#key-insights-learnings" title="Permanent link">&para;</a></h2>
 <h3 id="what-worked">What Worked<a class="headerlink" href="#what-worked" title="Permanent link">&para;</a></h3>
 <ul>
@@ -965,12 +806,6 @@ python<span class="w"> </span>scripts/workflow.py<span class="w"> </span>--mode<
 <li><strong><a href="https://arxiv.org/pdf/2104.14294">Emerging Properties in Self-Supervised Vision Transformers</a></strong></li>
 <li><strong><a href="https://lilianweng.github.io/posts/2019-11-10-self-supervised/">Self-Supervised Representation Learning</a></strong></li>
 </ul>
-<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>Contributions are welcome! Feel free to:
-- Submit pull requests
-- Report issues
-- Suggest improvements
-- Share your own approaches</p>
 <h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
 <p>This project is open source and available under the MIT License.</p>
 <hr />
