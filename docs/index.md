@@ -63,51 +63,6 @@ Our solution employs a **semi-supervised learning pipeline** built around Vision
 - **Weighted ensemble** balances clean vs. pseudo-labeled models
 - **Effective class weighting** handles severe imbalance
 
-## Project Structure
-
-```
-sheep-classification-challenge/
-├── src/
-│   ├── modeling/         # Training, evaluation, clustering
-│   ├── data/             # Dataset, transforms, pseudo-labeling
-│   └── utils/            # Helpers and utilities
-├── scripts/
-│   ├── train_cv.py       # Main training script
-│   ├── workflow.py       # Complete pipeline orchestration
-│   └── submit.sh         # Submission automation
-├── configs/              # Configuration files
-├── notebooks/            # Jupyter notebooks
-└── results/              # Training outputs and metrics
-```
-
-## Getting Started
-
-### Installation
-```bash
-git clone https://github.com/ahmedsalim3/sheep-classification-challenge.git
-cd sheep-classification-challenge
-make install
-```
-
-### Quick Start
-```bash
-# Download dataset
-make download-data
-
-# Run complete pipeline
-python scripts/train_cv.py
-
-# Or use the workflow script
-python scripts/workflow.py --mode full --use_clustering
-```
-
-### Configuration
-Edit `configs/config.yml` to customize:
-- Data paths and directories
-- Training parameters
-- Pseudo-labeling thresholds
-- Clustering settings
-
 ## Key Insights & Learnings
 
 ### What Worked
@@ -142,13 +97,6 @@ Edit `configs/config.yml` to customize:
 - **[Emerging Properties in Self-Supervised Vision Transformers](https://arxiv.org/pdf/2104.14294)**
 - **[Self-Supervised Representation Learning](https://lilianweng.github.io/posts/2019-11-10-self-supervised/)**
 
-## Contributing
-
-Contributions are welcome! Feel free to:
-- Submit pull requests
-- Report issues
-- Suggest improvements
-- Share your own approaches
 
 ## License
 
