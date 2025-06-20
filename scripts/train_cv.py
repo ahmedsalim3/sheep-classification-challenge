@@ -128,7 +128,10 @@ if __name__ == "__main__":
             output_dir = CONFIG.processed_data_dir
 
             clusterer = KMeansClustering(
-                pseudo_df=pseudo_df, train_df=train_df, output_dir=output_dir
+                pseudo_df=pseudo_df,
+                train_df=train_df,
+                output_dir=output_dir,
+                purity_threshold=float(CONFIG.purity_threshold),
             )
             df_clusters, final_df = clusterer.run()
 
