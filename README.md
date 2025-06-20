@@ -50,12 +50,25 @@ It supports clean training, pseudo-labeling, clustering, and full semi-supervise
 
 All final logs, metrics, and plots can be found inside the [here](./results/) folder
 
-## Contributions
-
-Pull requests and suggestions are welcome. If you found this helpful or want to build on it, feel free to reach out [@ahmedsalim3](https://github.com/ahmedsalim3)
 
 ## References
 
 [Eid Al-Adha 2025: Sheep Classification Challenge](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/overview)
 
 [Fix The Data First, Then Worry About The Model](https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model/notebook)
+
+
+## Repo Structure
+
+```sh
+sheep-classification-challenge/
+├── src/
+│   ├── modeling/         # Training, evaluation, clustering
+│   ├── data/             # Dataset, transforms, pseudo-labeling
+│   └── utils/            # Helpers and utilities
+├── scripts/
+│   └──train_cv.py        # Main training script
+├── configs/              # Configuration files
+├── notebooks/            # Jupyter notebooks
+└── results/              # Training outputs and metrics
+```

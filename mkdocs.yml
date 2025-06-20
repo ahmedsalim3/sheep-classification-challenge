@@ -5,6 +5,9 @@ site_url: https://ahmedsalim3.github.io/sheep-classification-challenge/
 
 theme:
   name: material
+  logo: assets/images/logo.svg
+  icon:
+    repo: fontawesome/brands/github
   palette:
     - scheme: slate
       primary: teal
