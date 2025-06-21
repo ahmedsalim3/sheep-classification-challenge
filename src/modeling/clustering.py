@@ -1,8 +1,6 @@
 import os
 import pandas as pd
 
-from torch.utils.data import DataLoader
-
 from collections import Counter
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
@@ -15,52 +13,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-from src.data.dataset import SheepDataset
-from src.data.transforms import get_valid_transforms
 from src.data.pseudo_labeling import load_pseudo_labels
 from src.modeling.feature_extraction import extract_features
 from src.modeling.helpers import load_models
 from src.utils.config import ConfigManager
 from src.utils.logger import Logger
+from src.utils.helpers import load_test_data
 
 CONFIG = ConfigManager()
 logger = Logger()
 
 
 class KMeansClustering:
-    def __init__(self, pseudo_df, train_df, output_dir, purity_threshold=0.9):
-        self.config = CONFIG
+    def __init__(self, pseudo_df, train_df, purity_threshold=0.9):
         self.train_df = train_df
-        self.output_dir = output_dir
         self.pseudo_df = pseudo_df
         self.purity_threshold = purity_threshold
         self.models = self._load_models()
-        self.test_loader = self._load_test_loader()
+        self.test_loader = load_test_data()
         self.filenames = self.test_loader.dataset.img_files
 
     def _load_models(self):
+        # we assume that initial models are saved in the models directory
+        # no final models, yet
         model_files = sorted(
-            [f for f in os.listdir(self.config.models_dir) if f.endswith(".pth")]
+            [f for f in os.listdir(CONFIG.models_dir) if f.endswith(".pth")]
         )
         return load_models(model_files)
-
-    def _load_test_loader(self):
-        files = sorted(
-            [f for f in os.listdir(self.config.test_dir) if f.lower().endswith(".jpg")]
-        )
-        dataset = SheepDataset(
-            image_dir=self.config.test_dir,
-            transform=get_valid_transforms(),
-            is_test=True,
-        )
-        dataset.img_files = files
-        return DataLoader(
-            dataset,
-            batch_size=self.config.batch_size,
-            shuffle=False,
-            num_workers=4,
-            pin_memory=True,
-        )
 
     def run(self):
         logger.info(f"{len(self.filenames)} test images loaded.")
@@ -69,7 +48,7 @@ class KMeansClustering:
         features, filenames = extract_features(self.models, self.test_loader)
 
         # Run clustering
-        embedding, cluster_labels = run_clustering(features, k=self.config.num_classes)
+        embedding, cluster_labels = run_clustering(features, k=CONFIG.num_classes)
 
         # Load pseudo-labels
         pseudo_label_map, pseudo_conf_map = load_pseudo_labels(self.pseudo_df)
@@ -89,13 +68,13 @@ class KMeansClustering:
             }
         )
         # Visualize the clusters
-        show_clusters(df_clusters, output_dir=self.output_dir)
+        show_clusters(df_clusters, output_dir=CONFIG.interim_data_dir)
 
         df_clusters.to_csv(
-            os.path.join(self.output_dir, "clustered_test_results.csv"), index=False
+            os.path.join(CONFIG.interim_data_dir, "clustered_results.csv"), index=False
         )
         logger.info(
-            f"Clustered CSV saved to {os.path.join(self.output_dir, 'clustered_test_results.csv')}"
+            f"Clustered CSV saved to {os.path.join(CONFIG.interim_data_dir, 'clustered_results.csv')}"
         )
 
         logger.info("Calculating cluster purity...")
@@ -108,7 +87,6 @@ class KMeansClustering:
             purity_map=purity_map,
             label_map=cluster_label_map,
             feats=features,
-            output_dir=self.output_dir,
             purity_threshold=self.purity_threshold,
             return_df=True,
         )
@@ -157,7 +135,7 @@ def get_cluster_labels_from_pseudo(cluster_labels, filenames, pseudo_map):
     return label_names
 
 
-def show_clusters(df_clusters, output_dir=None):
+def show_clusters(df_clusters, output_dir=CONFIG.interim_data_dir):
     plt.figure(figsize=(12, 8))
     sns.scatterplot(
         data=df_clusters,
@@ -206,7 +184,6 @@ def build_csv(
     purity_map,
     label_map,
     feats,
-    output_dir,
     purity_threshold=0.9,
     return_df=False,
 ):
@@ -239,15 +216,18 @@ def build_csv(
     logger.info(
         f"Cluster samples after purity filtering and core sample filtering: {len(cluster)}"
     )
+    cluster.to_csv(
+        os.path.join(CONFIG.interim_data_dir, "cluster_labels.csv"), index=False
+    )
 
     # Merge all
     merged_df = pd.concat([train, pseudo, cluster], ignore_index=True)
     merged_df.rename(columns={"conf": "confidence", "src": "source"}, inplace=True)
     merged_df.to_csv(
-        os.path.join(output_dir, "pseudo_clustered_merged.csv"), index=False
+        os.path.join(CONFIG.processed_data_dir, "final_train_labels.csv"), index=False
     )
     logger.info(
-        f"Merged CSV saved to {os.path.join(output_dir, 'pseudo_clustered_merged.csv')}"
+        f"Merged CSV saved to {os.path.join(CONFIG.processed_data_dir, 'final_train_labels.csv')}"
     )
     logger.info(f"Total samples after merging: {len(merged_df)}")
 

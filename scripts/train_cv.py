@@ -1,11 +1,10 @@
 import os
-import argparse
 
 import numpy as np
 import pandas as pd
 
 from src.utils.helpers import get_label_maps, load_models, load_test_data
-from src.modeling.train_eval import train_cross_validation, compute_class_weights
+from src.modeling.train_eval import train_cross_validation
 from src.modeling.ensemble import ensemble_predict
 from src.modeling.clustering import KMeansClustering
 from src.data.pseudo_labeling import generate_pseudo_labels
@@ -14,19 +13,12 @@ from src import CONFIG, Logger
 logger = Logger()
 
 
-def arg_parse():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--pseudo_train", action="store_true")
-    return parser.parse_args()
-
-
 if __name__ == "__main__":
-    args = arg_parse()
-    pseudo_train = True  # args.pseudo_train
-
     INITIAL_RESULTS_DIR = os.path.join(CONFIG.results_dir, "initial_results")
+    PREDICTIONS_DIR = os.path.join(CONFIG.results_dir, "predictions")
     os.makedirs(INITIAL_RESULTS_DIR, exist_ok=True)
-    if pseudo_train:
+    os.makedirs(PREDICTIONS_DIR, exist_ok=True)
+    if bool(CONFIG.pseudo_labeling):
         PSEUDO_RESULTS_DIR = os.path.join(CONFIG.results_dir, "final_results")
         os.makedirs(PSEUDO_RESULTS_DIR, exist_ok=True)
 
@@ -73,7 +65,7 @@ if __name__ == "__main__":
         }
     )
     preds_df.to_csv(
-        os.path.join(CONFIG.processed_data_dir, "initial_submission.csv"), index=False
+        os.path.join(PREDICTIONS_DIR, "initial_predictions.csv"), index=False
     )
 
     # ===== Save predictions with confidence =====
@@ -81,14 +73,12 @@ if __name__ == "__main__":
         {"filename": all_filenames, "label": all_labels, "confidence": all_confidences}
     )
     conf_preds_df.to_csv(
-        os.path.join(
-            CONFIG.processed_data_dir, "initial_submission_with_confidence.csv"
-        ),
+        os.path.join(PREDICTIONS_DIR, "initial_predictions_with_confidence.csv"),
         index=False,
     )
 
     # ===== Pseudo-labeling =====
-    if bool(CONFIG.pseudo_train):
+    if bool(CONFIG.pseudo_labeling):
         logger.info(f"\n{'-' * 60} Pseudo-labeling {'-' * 60}")
         test_loader = load_test_data()
 
@@ -107,30 +97,24 @@ if __name__ == "__main__":
 
         # Saving it
         pseudo_df.to_csv(
-            os.path.join(CONFIG.processed_data_dir, "pseudo_labels.csv"), index=False
+            os.path.join(CONFIG.interim_data_dir, "pseudo_labels.csv"), index=False
         )
         # Analyze pseudo-label distribution
         logger.info("\nPseudo-label class distribution:")
         logger.info(pseudo_df["label"].value_counts().sort_index())
 
-        if bool(CONFIG.cluster_train):
+        if bool(CONFIG.cluster_labeling):
             # ===== Cluster training =====
             logger.info("Clustering training...")
             # Load the pseudo-labels
             pseudo_df = pd.read_csv(
-                os.path.join(CONFIG.processed_data_dir, "pseudo_labels.csv")
-            )
-
-            pseudo_df = pd.read_csv(
-                os.path.join(CONFIG.processed_data_dir, "pseudo_labels.csv")
+                os.path.join(CONFIG.interim_data_dir, "pseudo_labels.csv")
             )
             train_df = pd.read_csv(CONFIG.train_csv)
-            output_dir = CONFIG.processed_data_dir
 
             clusterer = KMeansClustering(
                 pseudo_df=pseudo_df,
                 train_df=train_df,
-                output_dir=output_dir,
                 purity_threshold=float(CONFIG.purity_threshold),
             )
             df_clusters, final_df = clusterer.run()
@@ -157,16 +141,14 @@ if __name__ == "__main__":
             ), "Error: Label is not a string"
 
             final_df["label"] = final_df["label"].map(label2idx)
-            class_weights = compute_class_weights(
-                final_df["label"].values, method="effective"
-            ).to(CONFIG.device)
-            # logger.info(f"Class weights: {class_weights}")
 
         # ===== Train with combined dataset =====
 
         label2idx, idx2label = get_label_maps()
         final_df["label"] = final_df["label"].map(label2idx)
-        final_fold_scores = train_cross_validation(final_df, pseudo_train=True)
+        final_fold_scores = train_cross_validation(
+            final_df, pseudo_train=True, results_dir=PSEUDO_RESULTS_DIR
+        )
 
         # ===== Final predictions =====
         all_model_files = [
@@ -227,12 +209,10 @@ if __name__ == "__main__":
             os.listdir(CONFIG.test_dir)
         ), "Mismatch in number of test files!"
 
-        out1 = os.path.join(CONFIG.processed_data_dir, "predictions.csv")
+        out1 = os.path.join(PREDICTIONS_DIR, "final_predictions.csv")
         test_df.to_csv(out1, index=False)
 
-        out2 = os.path.join(
-            CONFIG.processed_data_dir, "predictions_with_confidence.csv"
-        )
+        out2 = os.path.join(PREDICTIONS_DIR, "final_predictions_with_confidence.csv")
         test_conf_df.to_csv(out2, index=False)
 
         # Print some statistics

@@ -48,6 +48,7 @@ class ConfigManager:
         Path(self.config["models_dir"]).mkdir(parents=True, exist_ok=True)
         Path(self.config["results_dir"]).mkdir(parents=True, exist_ok=True)
         Path(self.config["processed_data_dir"]).mkdir(parents=True, exist_ok=True)
+        Path(self.config["interim_data_dir"]).mkdir(parents=True, exist_ok=True)
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
