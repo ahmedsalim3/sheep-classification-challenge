@@ -13,6 +13,7 @@ A deep learning solution for classifying sheep breeds using semi-supervised lear
 git clone git@github.com:ahmedsalim3/sheep-classification-challenge.git
 cd sheep-classification-challenge
 ```
+
 2. Install dependencies
 
 ```sh
@@ -26,37 +27,52 @@ Edit YAML file in [`config.yml`](./configs/config.yml) to configure the paths, o
 ## Dataset
 
 The dataset is hosted on [Kaggle](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/data).
-YTo download it automatically:
+
+To download it automatically:
 
 ```sh
-`make download-data`
+make download-data
 ```
 
 Make sure your Kaggle credentials are set correctly [here](./scripts/download_dataset.sh#L11)
 
 ## Training
 
-Run training with:
+The project supports two training modes:
+
+### Cross-Validation Training
+
+For robust model evaluation with k-fold cross-validation:
 
 ```sh
-make train
-# or just:
-python scripts/train_cv.py
+python scripts/train.py --use_cross_validation
+```
+
+### Normal Training
+
+For faster training with train/validation split:
+
+```sh
+python scripts/train.py --val_split 0.2
+```
+
+### Custom Validation Split
+
+```sh
+python scripts/train.py --val_split 0.3
 ```
 
 It supports clean training, pseudo-labeling, clustering, and full semi-supervised loops
 
 ## Results
 
-All final logs, metrics, and plots can be found inside the [here](./results/) folder
-
+All final logs, metrics, and plots can be found inside the [results](./results/) folder
 
 ## References
 
 [Eid Al-Adha 2025: Sheep Classification Challenge](https://www.kaggle.com/competitions/sheep-classification-challenge-2025/overview)
 
 [Fix The Data First, Then Worry About The Model](https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model/notebook)
-
 
 ## Repo Structure
 
@@ -67,7 +83,10 @@ sheep-classification-challenge/
 │   ├── data/             # Dataset, transforms, pseudo-labeling
 │   └── utils/            # Helpers and utilities
 ├── scripts/
-│   └──train_cv.py        # Main training script
+│   ├── train.py          # Unified training script
+│   ├── train_cv.sh       # Cross-validation training
+│   ├── train_normal.sh   # Normal training
+│   └── download_dataset.sh
 ├── configs/              # Configuration files
 ├── notebooks/            # Jupyter notebooks
 └── results/              # Training outputs and metrics

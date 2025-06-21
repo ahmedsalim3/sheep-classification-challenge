@@ -17,5 +17,5 @@ models_dir: 'models'
 results_dir: 'results'
 pseudo_labeling: true
 pseudo_threshold: 0.96
-cluster_labeling: true # pseudo_labeling must be true
+cluster_labeling: true
 purity_threshold: 0.90

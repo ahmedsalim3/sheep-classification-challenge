@@ -17,8 +17,13 @@ download-data:
 	chmod +x scripts/download_dataset.sh
 	./scripts/download_dataset.sh
 
-train:
-	uv run python3 -W ignore ./scripts/train_cv.py
+train-cv:
+	chmod +x scripts/train_cv.sh
+	./scripts/train_cv.sh
+
+train-normal:
+	chmod +x scripts/train_normal.sh
+	./scripts/train_normal.sh
 
 submit:
 	chmod +x scripts/submit.sh

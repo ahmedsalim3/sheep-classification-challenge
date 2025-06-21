@@ -1,10 +1,11 @@
 import os
-
+import argparse
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 from src.utils.helpers import get_label_maps, load_models, load_test_data
-from src.modeling.train_eval import train_cross_validation
+from src.modeling.train_eval import train_cross_validation, train_normal
 from src.modeling.ensemble import ensemble_predict
 from src.modeling.clustering import KMeansClustering
 from src.data.pseudo_labeling import generate_pseudo_labels
@@ -13,7 +14,17 @@ from src import CONFIG, Logger
 logger = Logger()
 
 
+def arg_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--use_cross_validation", action="store_true", default=False)
+    parser.add_argument("--val_split", type=float, default=0.2)
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = arg_parser()
+    use_cross_validation = args.use_cross_validation
+    val_split = args.val_split
     INITIAL_RESULTS_DIR = os.path.join(CONFIG.results_dir, "initial_results")
     PREDICTIONS_DIR = os.path.join(CONFIG.results_dir, "predictions")
     os.makedirs(INITIAL_RESULTS_DIR, exist_ok=True)
@@ -28,25 +39,36 @@ if __name__ == "__main__":
 
     train_df["label"] = train_df["label"].map(label2idx)
 
-    # ==== Cross-validation training ====
+    if use_cross_validation:
+        logger.info(f"\n{'-' * 60} Initial Cross-Validation Training {'-' * 60}")
+        fold_scores = train_cross_validation(
+            train_df, pseudo_train=False, results_dir=INITIAL_RESULTS_DIR
+        )
+        model_files = [f for f in os.listdir(CONFIG.models_dir) if f.endswith(".pth")]
+        sorted_model_files = sorted(
+            [f for f in model_files if f.startswith("cv_fold_")]
+        )
+        models = load_models(sorted_model_files)
+        fold_scores = np.load(os.path.join(CONFIG.models_dir, "cv_fold_scores.npy"))
+    else:
+        logger.info(f"\n{'-' * 60} Initial Normal Training {'-' * 60}")
+        train_data, val_data = train_test_split(
+            train_df,
+            test_size=val_split,
+            stratify=train_df["label"],
+            random_state=CONFIG.seed,
+        )
+        results = train_normal(
+            train_data,
+            val_data,
+            pseudo_train=False,
+            results_dir=INITIAL_RESULTS_DIR,
+            model_name="initial_model.pth",
+        )
+        models = load_models(["initial_model.pth"])
+        fold_scores = np.array([results["best_f1"]])
 
-    logger.info(f"\n{'-' * 60} Initial Cross-Validation Training {'-' * 60}")
-
-    fold_scores = train_cross_validation(
-        train_df, pseudo_train=False, results_dir=INITIAL_RESULTS_DIR
-    )
-
-    # ====== Predict on test set ======
-    # Load the 5 models we just trained
-    model_files = [f for f in os.listdir(CONFIG.models_dir) if f.endswith(".pth")]
-    sorted_model_files = sorted([f for f in model_files if f.startswith("cv_fold_")])
-
-    models = load_models(sorted_model_files)
-
-    # Load the test set
     test_loader = load_test_data()
-
-    fold_scores = np.load(os.path.join(CONFIG.models_dir, "cv_fold_scores.npy"))
     all_preds, all_confidences, all_filenames, all_probs = ensemble_predict(
         models, test_loader, fold_scores=fold_scores
     )
@@ -146,44 +168,71 @@ if __name__ == "__main__":
 
         label2idx, idx2label = get_label_maps()
         final_df["label"] = final_df["label"].map(label2idx)
-        final_fold_scores = train_cross_validation(
-            final_df, pseudo_train=True, results_dir=PSEUDO_RESULTS_DIR
-        )
+
+        if use_cross_validation:
+            final_fold_scores = train_cross_validation(
+                final_df, pseudo_train=True, results_dir=PSEUDO_RESULTS_DIR
+            )
+
+            all_model_files = [
+                f for f in os.listdir(CONFIG.models_dir) if f.endswith(".pth")
+            ]
+
+            cv_model_files = sorted(
+                [f for f in all_model_files if f.startswith("cv_fold_")]
+            )
+            pseudo_model_files = sorted(
+                [f for f in all_model_files if f.startswith("pseudo_fold_")]
+            )
+            sorted_model_files = cv_model_files + pseudo_model_files
+
+            models = load_models(sorted_model_files)
+            # Load CV scores for weighting
+            cv_scores = np.load(os.path.join(CONFIG.models_dir, "cv_fold_scores.npy"))
+            pseudo_scores = np.load(
+                os.path.join(CONFIG.models_dir, "pseudo_fold_scores.npy")
+            )
+            logger.info(f"\nCV Scores (Clean): {cv_scores}")
+            logger.info(f"CV Scores (Pseudo-labeled + Clustered): {pseudo_scores}")
+
+            # Option 1: downweight pseudo models manually (e.g. 0.5x)
+            # Concatenate the scores
+            scores = np.concatenate(
+                [
+                    cv_scores,  # Initial 5 models (clean training)
+                    pseudo_scores,  # * 0.9,  # Pseudo 5 models (without penalty)
+                ]
+            )
+        else:
+            train_data, val_data = train_test_split(
+                final_df,
+                test_size=val_split,
+                stratify=final_df["label"],
+                random_state=CONFIG.seed,
+            )
+            final_results = train_normal(
+                train_data,
+                val_data,
+                pseudo_train=True,
+                results_dir=PSEUDO_RESULTS_DIR,
+                model_name="final_model.pth",
+            )
+            all_model_files = [
+                f for f in os.listdir(CONFIG.models_dir) if f.endswith(".pth")
+            ]
+            initial_model_files = sorted(
+                [f for f in all_model_files if f.startswith("initial_model")]
+            )
+            final_model_files = sorted(
+                [f for f in all_model_files if f.startswith("final_model")]
+            )
+            sorted_model_files = initial_model_files + final_model_files
+            models = load_models(sorted_model_files)
+            scores = np.concatenate([fold_scores, np.array([final_results["best_f1"]])])
 
         # ===== Final predictions =====
-        all_model_files = [
-            f for f in os.listdir(CONFIG.models_dir) if f.endswith(".pth")
-        ]
-
-        cv_model_files = sorted(
-            [f for f in all_model_files if f.startswith("cv_fold_")]
-        )
-        pseudo_model_files = sorted(
-            [f for f in all_model_files if f.startswith("pseudo_fold_")]
-        )
-        sorted_model_files = cv_model_files + pseudo_model_files
-
-        models = load_models(sorted_model_files)
-
         # Load the test set
         test_loader = load_test_data()
-
-        # Load CV scores for weighting
-        cv_scores = np.load(os.path.join(CONFIG.models_dir, "cv_fold_scores.npy"))
-        pseudo_scores = np.load(
-            os.path.join(CONFIG.models_dir, "pseudo_fold_scores.npy")
-        )
-        logger.info(f"\nCV Scores (Clean): {cv_scores}")
-        logger.info(f"CV Scores (Pseudo-labeled + Clustered): {pseudo_scores}")
-
-        # Option 1: downweight pseudo models manually (e.g. 0.5x)
-        # Concatenate the scores
-        scores = np.concatenate(
-            [
-                cv_scores,  # Initial 5 models (clean training)
-                pseudo_scores,  # * 0.9,  # Pseudo 5 models (without penalty)
-            ]
-        )
         all_preds, all_confidences, all_filenames, all_probs = ensemble_predict(
             models, test_loader, fold_scores=scores
         )
