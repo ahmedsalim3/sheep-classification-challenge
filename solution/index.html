@@ -12,26 +12,26 @@
         <meta name="author" content="Ahmed Hashem Tahassalim">
       
       
-        <link rel="canonical" href="https://ahmedsalim3.github.io/sheep-classification-challenge/">
+        <link rel="canonical" href="https://ahmedsalim3.github.io/sheep-classification-challenge/solution/">
+      
+      
+        <link rel="prev" href="..">
       
       
       
-        <link rel="next" href="solution/">
-      
-      
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
-        <title>Sheep Classification Challenge</title>
+        <title>Solution - Sheep Classification Challenge</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,7 +50,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sheep-classification-challenge" class="md-skip">
+        <a href="#a-semi-supervised-vit-approach" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +92,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Sheep Classification Challenge" class="md-header__button md-logo" aria-label="Sheep Classification Challenge" data-md-component="logo">
+    <a href=".." title="Sheep Classification Challenge" class="md-header__button md-logo" aria-label="Sheep Classification Challenge" data-md-component="logo">
       
-  <img src="assets/images/logo.svg" alt="logo">
+  <img src="../assets/images/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Solution
             
           </span>
         </div>
@@ -201,15 +201,37 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Sheep Classification Challenge" class="md-nav__button md-logo" aria-label="Sheep Classification Challenge" data-md-component="logo">
+    <a href=".." title="Sheep Classification Challenge" class="md-nav__button md-logo" aria-label="Sheep Classification Challenge" data-md-component="logo">
       
-  <img src="assets/images/logo.svg" alt="logo">
+  <img src="../assets/images/logo.svg" alt="logo">
 
     </a>
     Sheep Classification Challenge
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
     
       
       
@@ -224,15 +246,13 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
   
   <span class="md-ellipsis">
-    Home
+    Solution
     
   </span>
   
@@ -240,12 +260,12 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="." class="md-nav__link md-nav__link--active">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Home
+    Solution
     
   </span>
   
@@ -258,8 +278,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -268,55 +286,74 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#challenge-overview" class="md-nav__link">
+  <a href="#a-semi-supervised-vit-approach" class="md-nav__link">
     <span class="md-ellipsis">
-      Challenge Overview
+      A Semi-Supervised ViT Approach
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#solution-approach" class="md-nav__link">
-    <span class="md-ellipsis">
-      Solution Approach
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Solution Approach">
+    <nav class="md-nav" aria-label="A Semi-Supervised ViT Approach">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-initial-training" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Initial Training
+      TLDR
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pseudo-labeling" class="md-nav__link">
+  <a href="#solution-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Pseudo-labeling
+      Solution Overview
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-clustering-based-data-mining" class="md-nav__link">
+  <a href="#phase-1-initial-supervised-training" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Clustering-based Data Mining
+      Phase 1: Initial Supervised Training
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Initial Supervised Training">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Details
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-final-training" class="md-nav__link">
+  <a href="#loss-function" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Final Training
+      Loss Function
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#augmentations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Augmentations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#models-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Models Architecture
     </span>
   </a>
   
@@ -326,130 +363,63 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#results-performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      Results &amp; Performance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Technical Implementation
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Implementation">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
+  <a href="#phase-2-semi-supervised-learning-pseudo-labeling" class="md-nav__link">
     <span class="md-ellipsis">
-      Architecture
+      Phase 2: Semi-Supervised Learning &amp; Pseudo-Labeling
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#training-configuration" class="md-nav__link">
+  <a href="#phase-3-final-training-inference" class="md-nav__link">
     <span class="md-ellipsis">
-      Training Configuration
+      Phase 3: Final Training &amp; Inference
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#key-innovations" class="md-nav__link">
+  <a href="#suggestions" class="md-nav__link">
     <span class="md-ellipsis">
-      Key Innovations
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-insights-learnings" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Insights &amp; Learnings
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key Insights &amp; Learnings">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-worked" class="md-nav__link">
-    <span class="md-ellipsis">
-      What Worked
+      Suggestions
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-didnt-work" class="md-nav__link">
+  <a href="#conclusion" class="md-nav__link">
     <span class="md-ellipsis">
-      What Didn't Work
+      Conclusion
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#best-practices-discovered" class="md-nav__link">
+  <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
-      Best Practices Discovered
+      References
     </span>
   </a>
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
+          <li class="md-nav__item">
   <a href="#resources" class="md-nav__link">
     <span class="md-ellipsis">
       Resources
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Resources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#technical-references" class="md-nav__link">
-    <span class="md-ellipsis">
-      Technical References
-    </span>
-  </a>
-  
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      License
-    </span>
-  </a>
   
 </li>
       
@@ -457,28 +427,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="solution/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Solution
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -500,8 +448,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -510,55 +456,74 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#challenge-overview" class="md-nav__link">
+  <a href="#a-semi-supervised-vit-approach" class="md-nav__link">
     <span class="md-ellipsis">
-      Challenge Overview
+      A Semi-Supervised ViT Approach
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#solution-approach" class="md-nav__link">
-    <span class="md-ellipsis">
-      Solution Approach
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Solution Approach">
+    <nav class="md-nav" aria-label="A Semi-Supervised ViT Approach">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-initial-training" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Initial Training
+      TLDR
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-pseudo-labeling" class="md-nav__link">
+  <a href="#solution-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Pseudo-labeling
+      Solution Overview
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-clustering-based-data-mining" class="md-nav__link">
+  <a href="#phase-1-initial-supervised-training" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Clustering-based Data Mining
+      Phase 1: Initial Supervised Training
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Initial Supervised Training">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Details
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-final-training" class="md-nav__link">
+  <a href="#loss-function" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Final Training
+      Loss Function
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#augmentations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Augmentations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#models-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Models Architecture
     </span>
   </a>
   
@@ -568,130 +533,63 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#results-performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      Results &amp; Performance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Technical Implementation
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Implementation">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
+  <a href="#phase-2-semi-supervised-learning-pseudo-labeling" class="md-nav__link">
     <span class="md-ellipsis">
-      Architecture
+      Phase 2: Semi-Supervised Learning &amp; Pseudo-Labeling
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#training-configuration" class="md-nav__link">
+  <a href="#phase-3-final-training-inference" class="md-nav__link">
     <span class="md-ellipsis">
-      Training Configuration
+      Phase 3: Final Training &amp; Inference
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#key-innovations" class="md-nav__link">
+  <a href="#suggestions" class="md-nav__link">
     <span class="md-ellipsis">
-      Key Innovations
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-insights-learnings" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Insights &amp; Learnings
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Key Insights &amp; Learnings">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-worked" class="md-nav__link">
-    <span class="md-ellipsis">
-      What Worked
+      Suggestions
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-didnt-work" class="md-nav__link">
+  <a href="#conclusion" class="md-nav__link">
     <span class="md-ellipsis">
-      What Didn't Work
+      Conclusion
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#best-practices-discovered" class="md-nav__link">
+  <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
-      Best Practices Discovered
+      References
     </span>
   </a>
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
+          <li class="md-nav__item">
   <a href="#resources" class="md-nav__link">
     <span class="md-ellipsis">
       Resources
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Resources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#technical-references" class="md-nav__link">
-    <span class="md-ellipsis">
-      Technical References
-    </span>
-  </a>
-  
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      License
-    </span>
-  </a>
   
 </li>
       
@@ -711,149 +609,82 @@
 
 
 
-<h1 id="sheep-classification-challenge">Sheep Classification Challenge<a class="headerlink" href="#sheep-classification-challenge" title="Permanent link">&para;</a></h1>
-<p>A deep learning solution for the <a href="https://www.kaggle.com/competitions/sheep-classification-challenge-2025/overview">Kaggle Sheep Classification Challenge 2025</a>, achieving <strong>0.97 F1-score</strong> using semi-supervised learning techniques on a small, imbalanced dataset.</p>
-<h2 id="challenge-overview">Challenge Overview<a class="headerlink" href="#challenge-overview" title="Permanent link">&para;</a></h2>
-<p>The goal was to classify 7 sheep breeds using just <strong>682 labeled images</strong> with significant class imbalance and visually noisy data. The evaluation metric was F1-score, making this a particularly challenging task.</p>
-<p><strong>Key Challenges:</strong>
-- Extremely small dataset (682 images)
-- High class imbalance across 7 breeds
-- Visually noisy images with poor quality
-- F1-score evaluation requiring balanced precision/recall</p>
-<h2 id="solution-approach">Solution Approach<a class="headerlink" href="#solution-approach" title="Permanent link">&para;</a></h2>
-<p>Our solution employs a <strong>semi-supervised learning pipeline</strong> built around Vision Transformers (ViT) with intelligent data mining techniques:</p>
-<h3 id="1-initial-training">1. Initial Training<a class="headerlink" href="#1-initial-training" title="Permanent link">&para;</a></h3>
+  <h1>Solution</h1>
+
+<h2 id="a-semi-supervised-vit-approach">A Semi-Supervised ViT Approach<a class="headerlink" href="#a-semi-supervised-vit-approach" title="Permanent link">&para;</a></h2>
+<h3 id="tldr">TLDR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Initial Training</strong>: A <code>Vision Transformer (ViT)</code> is trained on the 682 labeled images using 5-fold cross-validation, achieving an initial score of 0.93</li>
+<li><strong>Pseudo-Labeling</strong>: High-confidence predictions (≥0.96) and core samples from K-Means clustering on the test set are used to generate ~113 high-quality pseudo-labels</li>
+<li><strong>Final Training</strong>: The ViT is retrained on a merged dataset of original and pseudo-labeled data (~795 samples), and a weighted ensemble of all 10 models (5 from Phase 1 + 5 from Phase 3) produces the final 0.97 score</li>
+</ol>
+<h3 id="solution-overview">Solution Overview<a class="headerlink" href="#solution-overview" title="Permanent link">&para;</a></h3>
+<p><img alt="" src="https://www.googleapis.com/download/storage/v1/b/kaggle-forum-message-attachments/o/inbox%2F10851731%2Feb19bc16009c1db572751aafcb02dbec%2Foverview.png?generation=1750617600350718&amp;alt=media" /></p>
+<p>My approach can be broken down into three main phases:</p>
+<h3 id="phase-1-initial-supervised-training">Phase 1: Initial Supervised Training<a class="headerlink" href="#phase-1-initial-supervised-training" title="Permanent link">&para;</a></h3>
+<p>This stage aimed to build the strongest possible baseline using only the labeled train data</p>
+<h4 id="training-details">Training Details<a class="headerlink" href="#training-details" title="Permanent link">&para;</a></h4>
 <ul>
-<li><strong>5-fold cross-validation</strong> on clean labeled data</li>
-<li>Vision Transformer (ViT) architecture with differential learning rates</li>
-<li>Focal Loss + Effective Class Weights (β=0.9999) for imbalance handling</li>
-<li>CosineAnnealingWarmRestarts scheduler with early stopping</li>
-</ul>
-<h3 id="2-pseudo-labeling">2. Pseudo-labeling<a class="headerlink" href="#2-pseudo-labeling" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Ensemble predictions on unlabeled test set (144 images)</li>
-<li><strong>Strict confidence threshold (≥ 0.96)</strong> for quality control</li>
-<li>Extracted ~79 high-confidence pseudo-labeled samples</li>
-</ul>
-<h3 id="3-clustering-based-data-mining">3. Clustering-based Data Mining<a class="headerlink" href="#3-clustering-based-data-mining" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>K-Means clustering</strong> on ViT feature embeddings with UMAP dimensionality reduction</li>
-<li><strong>Purity threshold (≥ 0.9)</strong> for cluster filtering</li>
-<li>Extracted ~34 high-quality core samples from unlabeled data</li>
-<li>Feature space similarity for automatic labeling</li>
-</ul>
-<h3 id="4-final-training">4. Final Training<a class="headerlink" href="#4-final-training" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Combined dataset: 682 clean + ~113 synthetic samples = ~795 total</li>
-<li><strong>~79% of test set utilized</strong> through pseudo-labeling and clustering</li>
-<li>Ensemble of 10 models (5 initial + 5 final)</li>
-<li>Weighted ensemble using cross-validation scores</li>
-</ul>
-<h2 id="results-performance">Results &amp; Performance<a class="headerlink" href="#results-performance" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Best Kaggle F1-Score</strong></td>
-<td><strong>0.97</strong></td>
-</tr>
-<tr>
-<td><strong>Dataset Expansion</strong></td>
-<td>682 + ~113 synthetic samples → ~795 total</td>
-</tr>
-<tr>
-<td><strong>Unlabeled Data Utilization</strong></td>
-<td>~79% (113/144 test images)</td>
-</tr>
-<tr>
-<td><strong>High-Confidence Pseudo-labels</strong></td>
-<td>~79 samples</td>
-</tr>
-<tr>
-<td><strong>Clustered Core Samples</strong></td>
-<td>~34 samples</td>
-</tr>
-<tr>
-<td><strong>Model Ensemble Size</strong></td>
-<td>10 models</td>
-</tr>
-</tbody>
-</table>
-<h2 id="technical-implementation">Technical Implementation<a class="headerlink" href="#technical-implementation" title="Permanent link">&para;</a></h2>
-<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Base Model</strong>: Vision Transformer (ViT) via <code>timm</code> library, <a href="https://huggingface.co/timm/vit_base_patch16_224.augreg_in21k_ft_in1k"><code>vit_base_patch16_224.augreg_in21k_ft_in1k</code></a> variant</li>
-<li><strong>Classifier Head</strong>: Custom head with Linear → BatchNorm → GELU → Dropout(0.4) → Linear</li>
-<li><strong>Weight Initialization</strong>: Xavier Uniform for stable training</li>
-<li><strong>Loss Function</strong>: Focal Loss (γ=2.0) with effective sample weighting and confidence weighting support</li>
-</ul>
-<h3 id="training-configuration">Training Configuration<a class="headerlink" href="#training-configuration" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Optimizer</strong>: AdamW with differential learning rates (backbone: 10% LR, head: full LR)</li>
-<li><strong>Scheduler</strong>: CosineAnnealingWarmRestarts with warm restarts</li>
+<li><strong>Epochs</strong>: <code>50</code></li>
+<li><strong>Batch Size</strong>: <code>8</code></li>
+<li><strong>Optimizer</strong>: <code>AdamW</code> with differential learning rates (backbone: 10% of base LR, head: full base LR)</li>
+<li><strong>Learning Rate</strong>: A <code>CosineAnnealingWarmRestarts</code> scheduler started with an LR of <code>1e-4</code> and decayed it to a minimum of <code>1e-6</code></li>
 <li><strong>Weight Decay</strong>: 0.01 for weights, 0.0 for biases and normalization layers</li>
-<li><strong>Early Stopping</strong>: Patience=5, min_delta=0.001</li>
-<li><strong>Data Augmentation</strong>: Comprehensive Albumentations pipeline</li>
+<li><strong>Early Stopping</strong>: To prevent overfitting, training was stopped if the validation score did not improve by at least 0.001 for <code>5</code> consecutive epochs</li>
 </ul>
-<h3 id="key-innovations">Key Innovations<a class="headerlink" href="#key-innovations" title="Permanent link">&para;</a></h3>
+<h4 id="loss-function">Loss Function<a class="headerlink" href="#loss-function" title="Permanent link">&para;</a></h4>
+<p><strong>Focal Loss</strong> (<code>gamma=2.0</code>) was chosen as the objective function. Focal Loss helps by down-weighting easy, correct predictions, forcing the model to focus its efforts on the more difficult or ambiguous samples, which is exactly what's needed to push the F1 score higher. The loss function also supports confidence weighting, allowing pseudo-labeled samples to be weighted by their prediction confidence during training</p>
+<p>I calculated class weights using the <strong>"effective number of samples"</strong> method with β=0.9999. This adjusts weights based on how many examples each class has, so the model doesn't get biased toward the majority class. The method comes from the paper <a href="https://arxiv.org/pdf/1901.05555"><em>Class-Balanced Loss Based on Effective Number of Samples</em></a>, and its official <a href="https://github.com/vandit15/Class-balanced-loss-pytorch/blob/master/class_balanced_loss.py#L53-L91">implementation in PyTorch</a>. These calculated weights were then passed to the Focal Loss function during training</p>
+<h4 id="augmentations">Augmentations<a class="headerlink" href="#augmentations" title="Permanent link">&para;</a></h4>
+<p>As ViT expects massive amounts of data, and due to the presence of imbalanced classes, I applied different augmentation techniques. These help the model generalize better and avoid overfitting to the limited examples. I used the <a href="https://albumentations.ai/"><code>albumentations</code></a> library, which includes:</p>
 <ul>
-<li><strong>Confidence-based filtering</strong> prevents pseudo-label noise</li>
-<li><strong>Clustering purity checks</strong> ensure high-quality synthetic samples</li>
-<li><strong>Weighted ensemble</strong> balances clean vs. pseudo-labeled models</li>
-<li><strong>Effective class weighting</strong> handles severe imbalance</li>
-<li><strong>Differential learning rates</strong> for optimal fine-tuning</li>
+<li><strong>Geometric</strong>: <code>HorizontalFlip</code> (p=0.5), <code>Affine</code> (scaling: 0.9-1.1, translation: 0-10%, rotation: ±15°, shear: 5°, p=0.7)</li>
+<li><strong>Color &amp; Contrast</strong>: <code>RandomBrightnessContrast</code> (brightness/contrast: ±0.2, p=0.5), <code>CLAHE</code> (clip_limit=2.0, p=0.2), <code>HueSaturationValue</code> (hue: ±10, sat: ±15, val: ±10, p=0.3)</li>
+<li><strong>Distortion &amp; Blur</strong>: <code>MotionBlur</code>/<code>MedianBlur</code> (blur_limit=3, p=0.2), <code>GridDistortion</code> (distort_limit=0.03, p=0.1), <code>ElasticTransform</code> (alpha=1, sigma=50, p=0.1)</li>
+<li><strong>Occlusion &amp; Weather</strong>: <code>CoarseDropout</code> (3-6 holes, 10-32px, p=0.3), <code>RandomFog</code> (fog_coef: 0.1-0.3, p=0.2), <code>RandomRain</code> (blur_value=3, p=0.1)</li>
+<li><strong>Normalization</strong>: Standard ImageNet mean and std</li>
 </ul>
-<h2 id="key-insights-learnings">Key Insights &amp; Learnings<a class="headerlink" href="#key-insights-learnings" title="Permanent link">&para;</a></h2>
-<h3 id="what-worked">What Worked<a class="headerlink" href="#what-worked" title="Permanent link">&para;</a></h3>
+<h4 id="models-architecture">Models Architecture<a class="headerlink" href="#models-architecture" title="Permanent link">&para;</a></h4>
+<p>The core architecture is the <strong>Vision Transformer (ViT)</strong>. I used the <a href="https://huggingface.co/timm/vit_base_patch16_224.augreg_in21k_ft_in1k"><code>vit_base_patch16_224.augreg_in21k_ft_in1k</code></a> model, pre-trained on ImageNet-21k. The final classifier head was replaced with a custom one for our 7 classes, featuring a linear layer, batch normalization, GELU activation, and a <code>Dropout</code> layer with a probability of 0.4 for regularization. The weights of this custom head were initialized using Xavier Uniform initialization for stable training from the start</p>
+<p>The initial training, using 5-fold cross-validation on the original 682 samples, resulted in an ensemble that achieved an F1 score of <strong>0.93</strong> on the leaderboard</p>
+<h3 id="phase-2-semi-supervised-learning-pseudo-labeling">Phase 2: Semi-Supervised Learning &amp; Pseudo-Labeling<a class="headerlink" href="#phase-2-semi-supervised-learning-pseudo-labeling" title="Permanent link">&para;</a></h3>
+<p>This was the key to improving the score. I used two techniques to generate high-quality pseudo-labels from the test set:</p>
+<ol>
+<li>
+<p><strong>High-Confidence Predictions:</strong> Using the ensemble from Phase 1, I generated predictions on the test set. Any prediction with a confidence score <strong>≥ 0.96</strong> was kept, yielding approximately <strong>~79 pseudo-labeled samples</strong></p>
+</li>
+<li>
+<p><strong>Clustering for Core Samples:</strong> To find more diverse and representative samples, I performed clustering:</p>
 <ul>
-<li><strong>High confidence thresholds</strong> (≥0.96) for pseudo-labeling</li>
-<li><strong>Clustering with purity checks</strong> extracted valuable samples</li>
-<li><strong>Ensemble diversity</strong> through different training strategies</li>
-<li><strong>Focal Loss + Effective Class Weights</strong> handled imbalance effectively</li>
-<li><strong>Differential learning rates</strong> for backbone vs. head optimization</li>
+<li>Extracted high-dimensional feature embeddings from the penultimate layer of the 5 trained models</li>
+<li>Applied UMAP to reduce the dimensionality to 2D, followed by K-Means clustering (k=7)</li>
+<li>After verifying that the cluster purity was high (≥ 90%), I extracted the samples closest to each cluster centroid, resulting in about <strong>~34 core samples</strong></li>
 </ul>
-<h3 id="what-didnt-work">What Didn't Work<a class="headerlink" href="#what-didnt-work" title="Permanent link">&para;</a></h3>
+</li>
+</ol>
+<h3 id="phase-3-final-training-inference">Phase 3: Final Training &amp; Inference<a class="headerlink" href="#phase-3-final-training-inference" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Lower confidence thresholds introduced noise</li>
-<li>Blind pseudo-labeling without filtering</li>
-<li>Single model approaches</li>
-<li>Standard cross-entropy loss</li>
-<li>Uniform learning rates across backbone and head</li>
+<li><strong>Merged Dataset</strong>: The original 682 training images were merged with the ~113 pseudo-labeled samples, creating a new, enriched training set of <strong>~795 images</strong></li>
+<li><strong>Final Training</strong>: A new set of 5 ViT models was trained on this merged dataset, using the exact same configuration as in Phase 1</li>
+<li><strong>Final Inference</strong>: The final prediction was a <strong>weighted ensemble of all 10 models</strong> (5 from Phase 1 + 5 from Phase 3), giving more weight to the models with higher validation scores</li>
 </ul>
-<h3 id="best-practices-discovered">Best Practices Discovered<a class="headerlink" href="#best-practices-discovered" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Quality over quantity</strong> in synthetic data generation</li>
-<li><strong>Consistent feature space</strong> for clustering effectiveness</li>
-<li><strong>Balanced ensemble weighting</strong> for optimal performance</li>
-<li><strong>Robust data augmentation</strong> for small datasets</li>
-<li><strong>Differential learning rates</strong> for pre-trained model fine-tuning</li>
-</ul>
-<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong><a href="https://github.com/ahmedsalim3/sheep-classification-challenge">GitHub Repository</a></strong></li>
-<li><strong><a href="https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model">Kaggle Notebook</a></strong></li>
-<li><strong><a href="https://www.kaggle.com/competitions/sheep-classification-challenge-2025">Competition Page</a></strong></li>
-<li><strong><a href="https://www.kaggle.com/competitions/sheep-classification-challenge-2025/discussion/585744">Discussion</a></strong></li>
-</ul>
-<h3 id="technical-references">Technical References<a class="headerlink" href="#technical-references" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong><a href="https://albumentations.ai/">Albumentations</a></strong></li>
-<li><strong><a href="https://arxiv.org/pdf/2010.11929"><em>An Image is Worth 16x16 Words</em></a></strong></li>
-<li><strong><a href="https://huggingface.co/timm/vit_base_patch16_224.augreg_in21k_ft_in1k">timm-model: vit_base_patch16_224.augreg_in21k_ft_in1k</a></strong></li>
-<li><strong><a href="https://arxiv.org/pdf/1802.03426">UMAP: Uniform Manifold Approximation and Projection</a></strong></li>
-<li><strong><a href="https://arxiv.org/pdf/1901.05555">Class-Balanced Loss Based on Effective Number of Samples</a></strong></li>
-<li><strong><a href="https://arxiv.org/pdf/2106.10270">How to train your ViT? Data, Augmentation, and Regularization</a></strong></li>
-<li><strong><a href="https://lilianweng.github.io/posts/2019-11-10-self-supervised/">Self-Supervised Representation Learning</a></strong></li>
-</ul>
-<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
-<p>This project is open source and available under the MIT License.</p>
-<hr />
-<p><em>Built with ❤️ for the Kaggle Sheep Classification Challenge 2025</em></p>
+<p>This final ensemble yielded the LB score of <strong>0.97</strong></p>
+<h3 id="suggestions">Suggestions<a class="headerlink" href="#suggestions" title="Permanent link">&para;</a></h3>
+<p>Applying self-supervised learning to this pipeline could further enhance performance. Pre-training the ViT backbone on the test set using a pretext task (e.g., rotation prediction) would allow the model to learn domain-specific features without needing labels. This can make feature extraction and clustering even more effective before pseudo-labeling, especially in low-label regimes. I didn't have time to explore this, but here is a great reference: <a href="https://lilianweng.github.io/posts/2019-11-10-self-supervised/">Lilian Weng's overview on self-supervised representation learning</a></p>
+<h3 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h3>
+<p>This semi-supervised approach proved to be very effective in producing high quality synthetic data, demonstrating the power of leveraging unlabeled test data through a combination of high-confidence thresholding and clustering</p>
+<p>Thanks for reading, and best of luck to everyone! </p>
+<h3 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h3>
+<p>[1] <a href="https://arxiv.org/pdf/1901.05555">Class-Balanced Loss Based on Effective Number of Samples</a></p>
+<p>[2] <a href="https://arxiv.org/pdf/2106.10270">How to train your ViT? Data, Augmentation, and Regularization in Vision Transformers</a></p>
+<p>[3] <a href="https://arxiv.org/abs/2010.11929v2">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</a></p>
+<p>[4] <a href="https://arxiv.org/pdf/1802.03426">UMAP: Uniform Manifold Approximation and Projection</a></p>
+<p>[5] <a href="https://lilianweng.github.io/posts/2019-11-10-self-supervised/">Self-Supervised Representation Learning</a></p>
+<h3 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h3>
+<ol>
+<li><a href="https://www.kaggle.com/code/ahvshim/fix-the-data-first-then-worry-about-the-model/notebook">Notebook</a></li>
+<li><a href="https://github.com/ahmedsalim3/sheep-classification-challenge">GitHub repository</a></li>
+</ol>
 
 
 
@@ -947,10 +778,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.instant", "navigation.sections", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>
